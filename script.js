@@ -168,7 +168,14 @@ const Grid = Honeycomb.defineGrid(Hex);
 app.view.width = 560;
 document.body.appendChild(app.view);
 graphics.lineStyle(2, 0xFFFFFF);
+
 let id = 0;
+let possibleClues;
+let globalcmb;
+let globalPlayerAmount = 0;
+let globalCombined = [];
+let roundNum = 1;
+let possibleSolution;
 
 function drawMap(map, order) {
     console.time();
@@ -587,6 +594,18 @@ function solve(arr, clues) {
 }
 
 function findSolutions() {
+    roundNum = 1;
+    const poss = document.querySelector('#possibilities');
+    const initial = document.querySelector('#initial');
+    const initialInversed = document.querySelector('#initialInverse');
+    if (initialInversed.checked) {
+        initial.value = `not${initial.value}`;
+    }
+    // const radios = document.querySelector('input[type=radio]');
+    // if (radios !== null ){
+    //     radios.removeEventListener('change', _handleChange);
+    // }
+    poss.innerHTML = '';
     // Test case
     // Map layout:
     // 6, 2f
@@ -614,16 +633,11 @@ function findSolutions() {
     console.log('map layout:', orderField.value);
     console.log('player amount:', amount.value);
     console.log('advanced game:', advanced.checked);
-    findSolution(amount.value, advanced.checked);
+    findSolution(amount.value, initial.value, advanced.checked);
     console.timeEnd();
 }
 
-let possibleClues;
-let globalcmb;
-let globalPlayerAmount = 0;
-let globalCombined = [];
-
-function findSolution(playerAmount, advanced = false) {
+function findSolution(playerAmount, initialClue, advanced = false) {
     globalPlayerAmount = playerAmount;
     const inForestDesert = inTerrain('forest', 'desert');
     const inForestWater = inTerrain('forest', 'water');
@@ -779,88 +793,15 @@ function findSolution(playerAmount, advanced = false) {
         comb.push(notWithinThreeFromGreen);
         comb.push(notWithinThreeFromWhite);
     }
+
     possibleClues = comb;
-
     globalCombined = combined;
-    // globalcmb = Combinatorics.combination(combined, playerAmount);
-    let a;
-    const solutionsArray = [];
-    const hexesArray = [];
-    let test1 = false;
-    let test2 = false;
-    let test3 = false;
-    let test4 = false;
-    let test5 = false;
-    let firstClue = inSwampMountain;
-    let secondClue = withinTwoFromBear;
-    let thirdClue = withinOneFromForest;
-    let fourthClue = withinOneFromWater;
-    let fifthClue = null;
 
-    // while(a = cmb.next()) {
-    //     let test1 = false;
-    //     let test2 = false;
-    //     let test3 = false;
-    //     let test4 = false;
-    //     let test5 = false;
-    //     a.forEach(b => {
-    //         if (!test1) {
-    //             test1 = _.isEqual(b, firstClue.hexes);
-    //         }
-    //         if (!test2) {
-    //             test2 = _.isEqual(b, secondClue.hexes);
-    //         }
-    //         if (!test3) {
-    //             test3 = _.isEqual(b, thirdClue.hexes);
-    //         }
-    //         if (!test4) {
-    //             test4 = _.isEqual(b, fourthClue.hexes);
-    //         }
-    //         if (!test5) {
-    //             test5 = _.isEqual(b, fifthClue.hexes);
-    //         }
-    //     });
-    //     if (!test1
-    //         || !test2
-    //         || !test3
-    //         || !test4
-    //         || !test5
-    //     ) continue;
-    //
-    //     const solution = solve(fullMap, a);
-    //
-    //     if (solution.length === 1) {
-    //         solutionsArray.push(solution[0]);
-    //         console.log(solution[0]);
-    //         hexesArray.push(a);
-    //     }
-    // }
-
-    // const seek = seekSolution(cmb, withinTwoFromBear, inSwampMountain, withinOneFromWater, withinOneFromForest);
-    // const seek = seekSolution(cmb, inSwampMountain);
     const seek = seekSolution(globalCombined);
 
     console.log(unique(seek[0]));
     console.log(unique(seek[0]).length);
-    // console.log(unique(solutionsArray));
-    // console.log(unique(solutionsArray).length);
-
-    // const cc = [];
-    // hexesArray.forEach(arr => {
-    // seek[1].forEach(arr => {
-    //     comb.forEach(arr2 => {
-    //         arr.forEach(ar => {
-    //             if (_.isEqual(ar, arr2.hexes)) {
-    //                 cc.push(arr2);
-    //             }
-    //         });
-    //     });
-    // });
-    // console.log('cc',unique(cc));
 }
-
-let roundNum = 1;
-let possibleSolution;
 
 function seekSolution(combined, firstClue = {id:0}, secondClue = {id:0}, thirdClue = {id:0}, fourthClue = {id:0}, fifthClue = {id:0}) {
     console.log('clue1', firstClue);
@@ -870,7 +811,7 @@ function seekSolution(combined, firstClue = {id:0}, secondClue = {id:0}, thirdCl
     console.log('clue5', fifthClue);
     const solutionsArray = [];
     const hexesArray = [];
-    let cmb = Combinatorics.combination(globalCombined, globalPlayerAmount);
+    let cmb = Combinatorics.bigCombination(globalCombined, globalPlayerAmount);
     let a;
     while(a = cmb.next()) {
         let test1 = false;
@@ -915,8 +856,8 @@ function seekSolution(combined, firstClue = {id:0}, secondClue = {id:0}, thirdCl
     }
     const cc = [];
 
-    console.log(unique(solutionsArray));
-    console.log(unique(solutionsArray).length);
+    // console.log(unique(solutionsArray));
+    // console.log(unique(solutionsArray).length);
     possibleSolution = unique(solutionsArray);
     hexesArray.forEach(arr => {
         possibleClues.forEach(arr2 => {
@@ -944,6 +885,14 @@ function createList(clues, round, clue1 = {id:0}, clue2 = {id:0}, clue3 = {id:0}
         txt += `{${t.x},${t.y}}`
     });
     ptag.innerText = txt;
+    clues.sort((a, b) => {
+        const keyA = a.id;
+        const keyB = b.id;
+        if (keyA < keyB) return -1;
+        if (keyA > keyB) return 1;
+        return 0;
+    });
+
     clues.forEach(clue => {
         if (clue.id !== clue1.id
             && clue.id !== clue2.id
@@ -951,14 +900,15 @@ function createList(clues, round, clue1 = {id:0}, clue2 = {id:0}, clue3 = {id:0}
             && clue.id !== clue4.id
             && clue.id !== clue5.id ) {
             const lab = document.createElement("label");
-            lab.setAttribute("for", clue.id);
+            lab.setAttribute("for", `${clue.id}-${round}`);
             lab.innerText = clue.name;
             const inp = document.createElement("input");
             inp.setAttribute('type', 'radio');
             inp.setAttribute('name', `round-${round}`);
             inp.setAttribute('value', clue.id);
-            inp.setAttribute('id', clue.id);
-            inp.addEventListener('change', e => {
+            inp.setAttribute('id', `${clue.id}-${round}`);
+            // inp.addEventListener('change', handleChange);
+            inp.addEventListener('change', function _handleChange() {
                 if (clue1.id === 0) {
                     clue1 = clue;
                 } else if (clue2.id === 0) {
@@ -981,15 +931,27 @@ function createList(clues, round, clue1 = {id:0}, clue2 = {id:0}, clue3 = {id:0}
     poss.appendChild(ptag);
 }
 
-function moreInfo(clues, clue1, clue2, clue3, clue4, clue5) {
-    seekSolution(clues, clue1, clue2, clue3, clue4, clue5)
+function handleChange(clue, clue1, clue2, clue3, clue4, clue5) {
+    if (clue1.id === 0) {
+        clue1 = clue;
+    } else if (clue2.id === 0) {
+        clue2 = clue;
+    } else if (clue3.id === 0) {
+        clue3 = clue;
+    } else if (clue4.id === 0) {
+        clue4 = clue;
+    } else if (clue5.id === 0) {
+        clue5 = clue;
+    }
+
+    seekSolution(globalCombined, clue1, clue2, clue3, clue4, clue5)
 }
 
 const unique = array => [...new Set(array.map(item => item))];
 
 function inTerrain(terrain1, terrain2, inverse = false) {
-    const name = `In ${terrain1} or ${terrain2}`;
-    const id = inverse ? `not${terrain1}${terrain2}` : `${terrain1}${terrain2}`;
+    const name = inverse ? `Not in ${terrain1} or ${terrain2}` : `In ${terrain1} or ${terrain2}`;
+    const id = inverse ? `notin${terrain1}${terrain2}` : `in${terrain1}${terrain2}`;
     const validHexes = [];
     fullMap.forEach(hex => {
         if (inverse) {
@@ -1011,147 +973,151 @@ function inTerrain(terrain1, terrain2, inverse = false) {
 }
 
 function withinOneFromTerrain(terrain, inverse = false) {
-    const name = `Within one space from ${terrain}`;
+    const name = inverse ? `Not within one space from ${terrain}` : `Within one space from ${terrain}`;
     const id = inverse ? `notonefrom${terrain}` : `onefrom${terrain}`;
     const validHexes = [];
     fullMap.forEach(hex1 => {
         if (hex1.type === terrain) {
             fullMap.forEach(hex2 => {
-                if (inverse) {
-                    if (hex1.distance(hex2) > 1) {
-                        validHexes.push(hex2);
-                    }
-                } else {
-                    if (hex1.distance(hex2) <= 1) {
-                        validHexes.push(hex1);
-                        validHexes.push(hex2);
-                    }
+                if (hex1.distance(hex2) <= 1) {
+                    validHexes.push(hex1);
+                    validHexes.push(hex2);
                 }
             });
         }
     });
-    const uu = unique(validHexes);
+    const uniqueValid = unique(validHexes);
+    if (inverse) {
+        return checkInverse(name, id, uniqueValid);
+    }
     return {
         name,
         id,
-        hexes: uu
+        hexes: uniqueValid
     };
 }
 
 function withinOneFromAnimal(inverse = false) {
-    const name = `Within one space from animal territories`;
+    const name = inverse ? `Not within one space from animal territories` : `Within one space from animal territories`;
     const id = inverse ? `notonefromanimal` : `onefromanimal`;
     const validHexes = [];
     fullMap.forEach(hex1 => {
         if (hex1.hasOwnProperty('animal')) {
             fullMap.forEach(hex2 => {
-                if (inverse) {
-                    if (hex1.distance(hex2) > 1) {
-                        validHexes.push(hex2);
-                    }
-                } else {
-                    if (hex1.distance(hex2) <= 1) {
-                        validHexes.push(hex1);
-                        validHexes.push(hex2);
-                    }
+                if (hex1.distance(hex2) <= 1) {
+                    validHexes.push(hex1);
+                    validHexes.push(hex2);
                 }
             });
         }
     });
-    const uu = unique(validHexes);
+    const uniqueValid = unique(validHexes);
+    if (inverse) {
+        return checkInverse(name, id, uniqueValid);
+    }
     return {
         name,
         id,
-        hexes: uu
+        hexes: uniqueValid
     };
 }
 
 function withinTwoFromAnimal(type, inverse = false) {
-    const name = `Within two spaces from ${type} territory`;
+    const name = inverse ? `Not within two spaces from ${type} territory` : `Within two spaces from ${type} territory`;
     const id = inverse ? `nottwofrom${type}` : `twofrom${type}`;
     const validHexes = [];
     fullMap.forEach(hex1 => {
         if (hex1.hasOwnProperty('animal')) {
             if (hex1.animal === type) {
                 fullMap.forEach(hex2 => {
-                    if (inverse) {
-                        if (hex1.distance(hex2) > 2) {
-                            validHexes.push(hex2);
-                        }
-                    } else {
-                        if (hex1.distance(hex2) <= 2) {
-                            validHexes.push(hex1);
-                            validHexes.push(hex2);
-                        }
+                    if (hex1.distance(hex2) <= 2) {
+                        validHexes.push(hex1);
+                        validHexes.push(hex2);
                     }
                 });
             }
         }
     });
-    const uu = unique(validHexes);
+    const uniqueValid = unique(validHexes);
+    if (inverse) {
+        return checkInverse(name, id, uniqueValid);
+    }
     return {
         name,
         id,
-        hexes: uu
+        hexes: uniqueValid
     };
 }
 
 function withinTwoFromStructureType(type, inverse = false) {
-    const name = `Within two spaces from ${type}`;
+    const name = inverse ? `Not within two spaces from ${type}` : `Within two spaces from ${type}`;
     const id = inverse ? `nottwofrom${type}` : `twofrom${type}`;
     const validHexes = [];
     fullMap.forEach(hex1 => {
         if (hex1.hasOwnProperty('structure')) {
             if (hex1.structure.type === type) {
                 fullMap.forEach(hex2 => {
-                    if (inverse) {
-                        if (hex1.distance(hex2) > 2) {
-                            validHexes.push(hex2);
-                        }
-                    } else {
-                        if (hex1.distance(hex2) <= 2) {
-                            validHexes.push(hex1);
-                            validHexes.push(hex2);
-                        }
+                    if (hex1.distance(hex2) <= 2) {
+                        validHexes.push(hex1);
+                        validHexes.push(hex2);
                     }
                 });
             }
         }
     });
-    const uu = unique(validHexes);
+    const uniqueValid = unique(validHexes);
+    if (inverse) {
+        return checkInverse(name, id, uniqueValid);
+    }
     return {
         name,
         id,
-        hexes: uu
+        hexes: uniqueValid
     };
 }
 
 function withinThreeFromStructureColor(color, inverse = false) {
-    const name = `Within three spaces from ${color} stuctures`;
+    const name = inverse ? `Not within three spaces from ${color} structures` : `Within three spaces from ${color} structures`;
     const id = inverse ? `notthreefrom${color}` : `threefrom${color}`;
     const validHexes = [];
     fullMap.forEach(hex1 => {
         if (hex1.hasOwnProperty('structure')) {
             if (hex1.structure.color === color) {
                 fullMap.forEach(hex2 => {
-                    if (inverse) {
-                        if (hex1.distance(hex2) > 3) {
-                            validHexes.push(hex2);
-                        }
-                    } else {
-                        if (hex1.distance(hex2) <= 3) {
-                            validHexes.push(hex1);
-                            validHexes.push(hex2);
-                        }
+                    if (hex1.distance(hex2) <= 3) {
+                        validHexes.push(hex1);
+                        validHexes.push(hex2);
                     }
                 });
             }
         }
     });
-    const uu = unique(validHexes);
+    const uniqueValid = unique(validHexes);
+    if (inverse) {
+        return checkInverse(name, id, uniqueValid);
+    }
     return {
         name,
         id,
-        hexes: uu
+        hexes: uniqueValid
+    };
+}
+
+function checkInverse(name, id, valid) {
+    const inverseArray = [];
+    fullMap.forEach(hex1 => {
+        let found = false;
+        for (let i = 0; i < valid.length; i++) {
+            if (hex1.id === valid[i].id) {
+                found = true;
+                break;
+            }
+        }
+        if (!found) inverseArray.push(hex1);
+    });
+    return {
+        name,
+        id,
+        hexes: inverseArray
     };
 }
