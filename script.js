@@ -160,18 +160,15 @@ const tile6 = [
     ]
 ];
 
-const app = new PIXI.Application({ transparent: true, antialias: true });
-const graphics = new PIXI.Graphics();
+const app = new PIXI.Application({ transparent: true });
 
 const Hex = Honeycomb.extendHex({ size: 30, orientation: 'flat' });
 const Grid = Honeycomb.defineGrid(Hex);
 app.view.width = 560;
 document.body.appendChild(app.view);
-graphics.lineStyle(2, 0xFFFFFF);
 
 let id = 0;
 let possibleClues;
-let globalcmb;
 let globalPlayerAmount = 0;
 let globalCombined = [];
 let roundNum = 1;
@@ -181,6 +178,8 @@ function drawMap(map, order) {
     console.time();
 
     map.forEach(hex => {
+        const graphics = new PIXI.Graphics();
+        graphics.lineStyle(2, 0xFFFFFF);
         const point = hex.toPoint();
         point.y += 5;
 
@@ -226,18 +225,27 @@ function drawMap(map, order) {
         graphics.lineTo(firstCorner.x, firstCorner.y);
 
         graphics.endFill();
+        app.stage.addChild(graphics);
 
-        graphics.lineStyle(2, 0xFFFFFF);
-
-        let text = new PIXI.Text(`{${hex.x}, ${hex.y}}`, {fontFamily : 'Arial', fontSize: 12, fill : 0x000000, align : 'center', strokeThickness: 1});
+        let text = new PIXI.Text(
+            `${hex.x}, ${hex.y}`,
+            {
+                fontFamily : 'Arial',
+                fontSize: 11,
+                fill : (color === 0x0000EE || color === 0xAA00AA) ? 0xffffff : 0x000000,
+                align : 'center',
+                strokeThickness: 1
+            }
+        );
         text.position.x = firstCorner.x - 40;
-        text.position.y = firstCorner.y - 10;
-
+        text.position.y = firstCorner.y + 10;
         app.stage.addChild(text);
     });
 
     // animal borders
     map.forEach(hex => {
+        const graphics = new PIXI.Graphics();
+        graphics.lineStyle(2, 0xFFFFFF);
         const point = hex.toPoint();
         point.y += 5;
 
@@ -269,9 +277,9 @@ function drawMap(map, order) {
 
             graphics.lineStyle(2, 0xFFFFFF);
         }
+
+        app.stage.addChild(graphics);
     });
-    app.stage.addChild(graphics);
-    app.stage.children.reverse();
 
     console.timeEnd();
 }
@@ -286,7 +294,12 @@ function combine(arr1, arr2) {
 
 function placeTilesFull() {
     console.time();
-    graphics.clear();
+
+    // clear stage
+    for (let i = app.stage.children.length - 1; i >= 0; i--) {
+        app.stage.removeChild(app.stage.children[i]);
+    }
+
     const rawValue = orderField.value;
     const parsed = rawValue.split(',');
     if (parsed.length !== 6) return;
@@ -495,78 +508,46 @@ const whitestone = document.querySelector('#whitestone');
 const blackshack = document.querySelector('#blackshack');
 const blackstone = document.querySelector('#blackstone');
 
-function drawShack(hex, color, rgb) {
-    const point = hex.toPoint();
-    const corners = hex.corners().map(corner => corner.add(point));
-    const [firstCorner, ...otherCorners] = corners;
-    graphics.lineStyle(2, 0xFFFFFF);
-
-    graphics.beginFill(rgb);
-
-    const origin = -20;
-    // move the "pencil" to the first corner
-    graphics.moveTo(firstCorner.x + origin, firstCorner.y + 15);
-    // draw lines to the other corners
-    graphics.lineTo(firstCorner.x + origin - 20, firstCorner.y + 15);
-    graphics.lineTo(firstCorner.x + origin - 10, firstCorner.y - 5);
-    // finish at the first corner
-    graphics.lineTo(firstCorner.x + origin, firstCorner.y + 15);
-
-    graphics.endFill();
-    // hex.structure = `${color} shack`;
+function handleShack(hex, color, rgb) {
     hex.structure = {
         type: 'shack',
         color
     };
-
-    // app.stage.addChild(graphics);
-    // app.stage.children.reverse();
+    drawShack(hex, color, rgb);
 }
 
-function drawStone(hex, color, rgb) {
-    const point = hex.toPoint();
-    const corners = hex.corners().map(corner => corner.add(point));
-    const [firstCorner, ...otherCorners] = corners;
-    graphics.lineStyle(2, '#ffffff');
-
-    graphics.beginFill(rgb);
-
-    graphics.drawCircle(firstCorner.x - 30, firstCorner.y + 5, 10);
-
-    graphics.endFill();
-    // hex.structure = `${color} stone`;
+function handleStone(hex, color, rgb) {
     hex.structure = {
         type: 'stone',
         color
     };
-
-    // app.stage.addChild(graphics);
-    // app.stage.children.reverse();
+    drawStone(hex, color, rgb);
 }
+
+function handleStructures(shack, stone, color, rgb) {
+    handleShack(shack, color, rgb);
+    handleStone(stone, color, rgb);
+}
+
+
 
 function apply() {
     console.time();
     const bshack = blueshack.value.split(',');
-    drawShack(fullMap.get([parseInt(bshack[0]), parseInt(bshack[1])]), 'blue',0x0000ff);
     const bstone = bluestone.value.split(',');
-    drawStone(fullMap.get([parseInt(bstone[0]), parseInt(bstone[1])]), 'blue', 0x0000ff);
-
     const gshack = greenshack.value.split(',');
-    drawShack(fullMap.get([parseInt(gshack[0]), parseInt(gshack[1])]), 'green',0x00ff00);
     const gstone = greenstone.value.split(',');
-    drawStone(fullMap.get([parseInt(gstone[0]), parseInt(gstone[1])]), 'green',0x00ff00);
-
     const wshack = whiteshack.value.split(',');
-    drawShack(fullMap.get([parseInt(wshack[0]), parseInt(wshack[1])]), 'white',0xffffff);
     const wstone = whitestone.value.split(',');
-    drawStone(fullMap.get([parseInt(wstone[0]), parseInt(wstone[1])]), 'white',0xffffff);
-
     const blshack = blackshack.value.split(',');
     const blstone = blackstone.value.split(',');
-    if (blshack.length !== 1 && blstone.length !== 1) {
 
-        drawShack(fullMap.get([parseInt(blshack[0]), parseInt(blshack[1])]), 'black', 0x000000);
-        drawStone(fullMap.get([parseInt(blstone[0]), parseInt(blstone[1])]), 'black', 0x000000);
+    handleStructures(fullMap.get([parseInt(bshack[0]), parseInt(bshack[1])]), fullMap.get([parseInt(bstone[0]), parseInt(bstone[1])]),'blue', 0x0000ff);
+    handleStructures(fullMap.get([parseInt(gshack[0]), parseInt(gshack[1])]), fullMap.get([parseInt(gstone[0]), parseInt(gstone[1])]),'green', 0x00ff00);
+    handleStructures(fullMap.get([parseInt(wshack[0]), parseInt(wshack[1])]), fullMap.get([parseInt(wstone[0]), parseInt(wstone[1])]),'white', 0xffffff);
+
+    if (blshack.length !== 1 && blstone.length !== 1) {
+        handleStructures(fullMap.get([parseInt(blshack[0]), parseInt(blshack[1])]), fullMap.get([parseInt(blstone[0]), parseInt(blstone[1])]),'black', 0x000000);
     }
 
     console.timeEnd();
@@ -856,8 +837,6 @@ function seekSolution(combined, firstClue = {id:0}, secondClue = {id:0}, thirdCl
     }
     const cc = [];
 
-    // console.log(unique(solutionsArray));
-    // console.log(unique(solutionsArray).length);
     possibleSolution = unique(solutionsArray);
     hexesArray.forEach(arr => {
         possibleClues.forEach(arr2 => {
@@ -893,32 +872,41 @@ function createList(clues, round, clue1 = {id:0}, clue2 = {id:0}, clue3 = {id:0}
         return 0;
     });
 
-    clues.forEach(clue => {
-        if (clue.id !== clue1.id
-            && clue.id !== clue2.id
-            && clue.id !== clue3.id
-            && clue.id !== clue4.id
-            && clue.id !== clue5.id ) {
+    for (let i = 0; i < clues.length; i++) {
+        if (clues[i].opposite === clue1.id
+            || clues[i].opposite === clue2.id
+            || clues[i].opposite === clue3.id
+            || clues[i].opposite === clue4.id
+            || clues[i].opposite === clue5.id
+        ) {
+            console.log(clues[i]);
+            continue;
+        }
+        if (clues[i].id !== clue1.id
+            && clues[i].id !== clue2.id
+            && clues[i].id !== clue3.id
+            && clues[i].id !== clue4.id
+            && clues[i].id !== clue5.id ) {
             const lab = document.createElement("label");
-            lab.setAttribute("for", `${clue.id}-${round}`);
-            lab.innerText = clue.name;
+            lab.setAttribute("for", `${clues[i].id}-${round}`);
+            lab.innerText = clues[i].name;
             const inp = document.createElement("input");
             inp.setAttribute('type', 'radio');
             inp.setAttribute('name', `round-${round}`);
-            inp.setAttribute('value', clue.id);
-            inp.setAttribute('id', `${clue.id}-${round}`);
+            inp.setAttribute('value', clues[i].id);
+            inp.setAttribute('id', `${clues[i].id}-${round}`);
             // inp.addEventListener('change', handleChange);
             inp.addEventListener('change', function _handleChange() {
                 if (clue1.id === 0) {
-                    clue1 = clue;
+                    clue1 = clues[i];
                 } else if (clue2.id === 0) {
-                    clue2 = clue;
+                    clue2 = clues[i];
                 } else if (clue3.id === 0) {
-                    clue3 = clue;
+                    clue3 = clues[i];
                 } else if (clue4.id === 0) {
-                    clue4 = clue;
+                    clue4 = clues[i];
                 } else if (clue5.id === 0) {
-                    clue5 = clue;
+                    clue5 = clues[i];
                 }
                 seekSolution(globalCombined, clue1, clue2, clue3, clue4, clue5);
             });
@@ -927,7 +915,8 @@ function createList(clues, round, clue1 = {id:0}, clue2 = {id:0}, clue3 = {id:0}
             poss.appendChild(inp);
             poss.appendChild(br);
         }
-    });
+    }
+
     poss.appendChild(ptag);
 }
 
@@ -952,6 +941,7 @@ const unique = array => [...new Set(array.map(item => item))];
 function inTerrain(terrain1, terrain2, inverse = false) {
     const name = inverse ? `Not in ${terrain1} or ${terrain2}` : `In ${terrain1} or ${terrain2}`;
     const id = inverse ? `notin${terrain1}${terrain2}` : `in${terrain1}${terrain2}`;
+    const opposite = !inverse ? `notin${terrain1}${terrain2}` : `in${terrain1}${terrain2}`;
     const validHexes = [];
     fullMap.forEach(hex => {
         if (inverse) {
@@ -968,6 +958,7 @@ function inTerrain(terrain1, terrain2, inverse = false) {
     return {
         name,
         id,
+        opposite,
         hexes: validHexes
     };
 }
@@ -975,6 +966,7 @@ function inTerrain(terrain1, terrain2, inverse = false) {
 function withinOneFromTerrain(terrain, inverse = false) {
     const name = inverse ? `Not within one space from ${terrain}` : `Within one space from ${terrain}`;
     const id = inverse ? `notonefrom${terrain}` : `onefrom${terrain}`;
+    const opposite = !inverse ? `notonefrom${terrain}` : `onefrom${terrain}`;
     const validHexes = [];
     fullMap.forEach(hex1 => {
         if (hex1.type === terrain) {
@@ -988,11 +980,12 @@ function withinOneFromTerrain(terrain, inverse = false) {
     });
     const uniqueValid = unique(validHexes);
     if (inverse) {
-        return checkInverse(name, id, uniqueValid);
+        return checkInverse(name, id, opposite, uniqueValid);
     }
     return {
         name,
         id,
+        opposite,
         hexes: uniqueValid
     };
 }
@@ -1000,6 +993,7 @@ function withinOneFromTerrain(terrain, inverse = false) {
 function withinOneFromAnimal(inverse = false) {
     const name = inverse ? `Not within one space from animal territories` : `Within one space from animal territories`;
     const id = inverse ? `notonefromanimal` : `onefromanimal`;
+    const opposite = !inverse ? `notonefromanimal` : `onefromanimal`;
     const validHexes = [];
     fullMap.forEach(hex1 => {
         if (hex1.hasOwnProperty('animal')) {
@@ -1013,11 +1007,12 @@ function withinOneFromAnimal(inverse = false) {
     });
     const uniqueValid = unique(validHexes);
     if (inverse) {
-        return checkInverse(name, id, uniqueValid);
+        return checkInverse(name, id, opposite, uniqueValid);
     }
     return {
         name,
         id,
+        opposite,
         hexes: uniqueValid
     };
 }
@@ -1025,6 +1020,7 @@ function withinOneFromAnimal(inverse = false) {
 function withinTwoFromAnimal(type, inverse = false) {
     const name = inverse ? `Not within two spaces from ${type} territory` : `Within two spaces from ${type} territory`;
     const id = inverse ? `nottwofrom${type}` : `twofrom${type}`;
+    const opposite = !inverse ? `nottwofrom${type}` : `twofrom${type}`;
     const validHexes = [];
     fullMap.forEach(hex1 => {
         if (hex1.hasOwnProperty('animal')) {
@@ -1040,11 +1036,12 @@ function withinTwoFromAnimal(type, inverse = false) {
     });
     const uniqueValid = unique(validHexes);
     if (inverse) {
-        return checkInverse(name, id, uniqueValid);
+        return checkInverse(name, id, opposite, uniqueValid);
     }
     return {
         name,
         id,
+        opposite,
         hexes: uniqueValid
     };
 }
@@ -1052,6 +1049,7 @@ function withinTwoFromAnimal(type, inverse = false) {
 function withinTwoFromStructureType(type, inverse = false) {
     const name = inverse ? `Not within two spaces from ${type}` : `Within two spaces from ${type}`;
     const id = inverse ? `nottwofrom${type}` : `twofrom${type}`;
+    const opposite = !inverse ? `nottwofrom${type}` : `twofrom${type}`;
     const validHexes = [];
     fullMap.forEach(hex1 => {
         if (hex1.hasOwnProperty('structure')) {
@@ -1067,11 +1065,12 @@ function withinTwoFromStructureType(type, inverse = false) {
     });
     const uniqueValid = unique(validHexes);
     if (inverse) {
-        return checkInverse(name, id, uniqueValid);
+        return checkInverse(name, id, opposite, uniqueValid);
     }
     return {
         name,
         id,
+        opposite,
         hexes: uniqueValid
     };
 }
@@ -1079,6 +1078,7 @@ function withinTwoFromStructureType(type, inverse = false) {
 function withinThreeFromStructureColor(color, inverse = false) {
     const name = inverse ? `Not within three spaces from ${color} structures` : `Within three spaces from ${color} structures`;
     const id = inverse ? `notthreefrom${color}` : `threefrom${color}`;
+    const opposite = !inverse ? `notthreefrom${color}` : `threefrom${color}`;
     const validHexes = [];
     fullMap.forEach(hex1 => {
         if (hex1.hasOwnProperty('structure')) {
@@ -1094,16 +1094,17 @@ function withinThreeFromStructureColor(color, inverse = false) {
     });
     const uniqueValid = unique(validHexes);
     if (inverse) {
-        return checkInverse(name, id, uniqueValid);
+        return checkInverse(name, id, opposite, uniqueValid);
     }
     return {
         name,
         id,
+        opposite,
         hexes: uniqueValid
     };
 }
 
-function checkInverse(name, id, valid) {
+function checkInverse(name, id, opposite, valid) {
     const inverseArray = [];
     fullMap.forEach(hex1 => {
         let found = false;
@@ -1118,6 +1119,7 @@ function checkInverse(name, id, valid) {
     return {
         name,
         id,
+        opposite,
         hexes: inverseArray
     };
 }

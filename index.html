@@ -15,7 +15,7 @@
     <div style="position:relative;float:left;margin:auto;">
         <label for="tileLayout">Map layout</label>
         <br>
-        <textarea name="tileOrder" id="tileLayout" cols="30" rows="2">6,2f,5,4,3,1</textarea>
+        <textarea name="tileOrder" id="tileLayout" cols="30" rows="2" placeholder="eg. 6,2f,5,4,3,1"></textarea>
         <br>
         <button onclick="placeTilesFull()">Draw tiles</button>
         <br>
@@ -26,24 +26,24 @@
         <span>Structures</span>
         <br>
         <label for="blueshack">Blue Shack</label>
-        <input type="text" id="blueshack" name="blueshack">
+        <input type="text" id="blueshack" name="blueshack" placeholder="eg. 9,1">
         <label for="bluestone">Blue Stone</label>
-        <input type="text" id="bluestone" name="bluestone">
+        <input type="text" id="bluestone" name="bluestone" placeholder="eg. 9,8">
         <br>
         <label for="whiteshack">White Shack</label>
-        <input type="text" id="whiteshack" name="whiteshack">
+        <input type="text" id="whiteshack" name="whiteshack" placeholder="eg. 4,6">
         <label for="whitestone">White Stone</label>
-        <input type="text" id="whitestone" name="whitestone">
+        <input type="text" id="whitestone" name="whitestone" placeholder="eg. 3,4">
         <br>
         <label for="greenshack">Green Shack</label>
-        <input type="text" id="greenshack" name="greenshack">
+        <input type="text" id="greenshack" name="greenshack" placeholder="eg. 2,4">
         <label for="greenstone">Green Stone</label>
-        <input type="text" id="greenstone" name="greenstone">
+        <input type="text" id="greenstone" name="greenstone" placeholder="eg. 2,6">
         <br>
         <label for="blackshack">Black Shack</label>
-        <input type="text" id="blackshack" name="blackshack">
+        <input type="text" id="blackshack" name="blackshack" placeholder="leave empty if simple">
         <label for="blackstone">Black Stone</label>
-        <input type="text" id="blackstone" name="blackstone">
+        <input type="text" id="blackstone" name="blackstone" placeholder="leave empty if simple">
         <br>
         <button onclick="apply()">Apply structures</button>
         <br><br>
@@ -99,6 +99,7 @@
     </div>
     <br>
     <br>
+    <script defer src="graphics.js"></script>
     <script defer src="script.js"></script>
 </body>
 </html>
