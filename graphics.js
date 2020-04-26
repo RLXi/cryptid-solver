@@ -292,6 +292,8 @@ function drawShack(hex, color, rgb) {
         color
     };
 
+    Object.assign(graphics, {hex});
+
     app.stage.addChild(graphics);
 }
 
@@ -313,6 +315,8 @@ function drawStone(hex, color, rgb) {
         type: 'stone',
         color
     };
+
+    Object.assign(graphics, {hex});
 
     app.stage.addChild(graphics);
 }

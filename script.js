@@ -171,13 +171,25 @@ let id = 0;
 let possibleClues;
 let globalPlayerAmount = 0;
 let globalCombined = [];
+let globalOrder;
+let globalRejected = [];
+let globalApproved = [];
+let globalStructures = [];
 let roundNum = 1;
 let possibleSolution;
 
-function drawMap(map, order) {
+function drawMap(map, order, structures = []) {
     console.time();
 
+    // clear stage
+    for (let i = app.stage.children.length - 1; i >= 0; i--) {
+        app.stage.removeChild(app.stage.children[i]);
+    }
+
     map.forEach(hex => {
+        const container = new PIXI.Container();
+
+        app.stage.addChild(container);
         const graphics = new PIXI.Graphics();
         graphics.lineStyle(2, 0xFFFFFF);
         const point = hex.toPoint();
@@ -225,7 +237,43 @@ function drawMap(map, order) {
         graphics.lineTo(firstCorner.x, firstCorner.y);
 
         graphics.endFill();
-        app.stage.addChild(graphics);
+
+        graphics.interactive = true;
+        // graphics.click = grayHex;
+        // graphics.click = function(e) {
+        //     console.log(this);
+        //     const graphics2 = new PIXI.Graphics();
+        //     graphics2.lineStyle(2, 0x555555);
+        //     graphics.beginFill(0x555555);
+        //
+        //     graphics.moveTo(firstCorner.x, firstCorner.y);
+        //
+        //     otherCorners.forEach(({ x, y }) => graphics.lineTo(x, y));
+        //
+        //     graphics.lineTo(firstCorner.x, firstCorner.y);
+        //
+        //     graphics.endFill();
+        //     app.stage.addChild(graphics2);
+        // };
+
+        Object.assign(graphics, {hex});
+
+        // app.stage.addChild(graphics);
+        container.addChild(graphics);
+
+        let ident = new PIXI.Text(
+            `${hex.type[0].toUpperCase()}`,
+            {
+                fontFamily : 'Arial',
+                fontSize: 11,
+                fill : (color === 0x0000EE || color === 0xAA00AA) ? 0xffffff : 0x000000,
+                align : 'center',
+                strokeThickness: 1
+            }
+        );
+        ident.position.x = firstCorner.x - 35;
+        ident.position.y = firstCorner.y - 23;
+        app.stage.addChild(ident);
 
         let text = new PIXI.Text(
             `${hex.x}, ${hex.y}`,
@@ -277,15 +325,25 @@ function drawMap(map, order) {
 
             graphics.lineStyle(2, 0xFFFFFF);
         }
-
+        Object.assign(graphics, {hex});
         app.stage.addChild(graphics);
     });
 
+    // structures
+    if (structures.length !== 0) {
+        structures.forEach(structureColor => {
+            handleStructures(structureColor.shack, structureColor.stone, structureColor.color, structureColor.rgb)
+        });
+    }
+
+    // console.log(app.stage);
     console.timeEnd();
 }
 
 const fullMap = Grid.rectangle({width: 12, height: 9});
-
+const hexTest1 = fullMap.get([0,0]);
+const hexTest2 = fullMap.get([0,3]);
+console.log(hexTest1.distance(hexTest2));
 const orderField = document.querySelector('textarea');
 
 function combine(arr1, arr2) {
@@ -482,7 +540,8 @@ function placeTilesFull() {
             count = true;
         }
     });
-    drawMap(fullMap, tileOrder);
+    globalOrder = tileOrder;
+    drawMap(fullMap, globalOrder, globalStructures);
 
     console.timeEnd();
 }
@@ -542,23 +601,49 @@ function apply() {
     const blshack = blackshack.value.split(',');
     const blstone = blackstone.value.split(',');
 
-    handleStructures(fullMap.get([parseInt(bshack[0]), parseInt(bshack[1])]), fullMap.get([parseInt(bstone[0]), parseInt(bstone[1])]),'blue', 0x0000ff);
-    handleStructures(fullMap.get([parseInt(gshack[0]), parseInt(gshack[1])]), fullMap.get([parseInt(gstone[0]), parseInt(gstone[1])]),'green', 0x00ff00);
-    handleStructures(fullMap.get([parseInt(wshack[0]), parseInt(wshack[1])]), fullMap.get([parseInt(wstone[0]), parseInt(wstone[1])]),'white', 0xffffff);
+    globalStructures = [];
+
+    globalStructures.push({
+        shack: fullMap.get([parseInt(bshack[0]), parseInt(bshack[1])]),
+        stone:fullMap.get([parseInt(bstone[0]), parseInt(bstone[1])]),
+        color: 'blue',
+        rgb: 0x0000ff
+    });
+    globalStructures.push({
+        shack: fullMap.get([parseInt(gshack[0]), parseInt(gshack[1])]),
+        stone: fullMap.get([parseInt(gstone[0]), parseInt(gstone[1])]),
+        color: 'green',
+        rgb: 0x00ff00
+    });
+    globalStructures.push({
+        shack: fullMap.get([parseInt(wshack[0]), parseInt(wshack[1])]),
+        stone: fullMap.get([parseInt(wstone[0]), parseInt(wstone[1])]),
+        color: 'white',
+        rgb: 0xffffff
+    });
+    // handleStructures(fullMap.get([parseInt(bshack[0]), parseInt(bshack[1])]), fullMap.get([parseInt(bstone[0]), parseInt(bstone[1])]),'blue', 0x0000ff);
+    // handleStructures(fullMap.get([parseInt(gshack[0]), parseInt(gshack[1])]), fullMap.get([parseInt(gstone[0]), parseInt(gstone[1])]),'green', 0x00ff00);
+    // handleStructures(fullMap.get([parseInt(wshack[0]), parseInt(wshack[1])]), fullMap.get([parseInt(wstone[0]), parseInt(wstone[1])]),'white', 0xffffff);
 
     if (blshack.length !== 1 && blstone.length !== 1) {
+        globalStructures.push({
+            shack: fullMap.get([parseInt(blshack[0]), parseInt(blshack[1])]),
+            stone: fullMap.get([parseInt(blstone[0]), parseInt(blstone[1])]),
+            color: 'black',
+            rgb: 0x000000
+        });
         handleStructures(fullMap.get([parseInt(blshack[0]), parseInt(blshack[1])]), fullMap.get([parseInt(blstone[0]), parseInt(blstone[1])]),'black', 0x000000);
     }
+
+    drawMap(fullMap, globalOrder, globalStructures);
 
     console.timeEnd();
 }
 
 function solve(arr, clues) {
-    if (arr === -1) {
-        return -1;
-    } else if (arr.length === 1) {
-        return arr;
-    }
+    if (arr === -1) return -1;
+    else if (arr.length === 1) return arr;
+
     const copy = clues.map(arr => arr);
     const clue = copy.splice(0,1);
     let round = [];
@@ -568,20 +653,20 @@ function solve(arr, clues) {
     } catch(e) {
         return -1;
     }
-    if (round.length === 0) {
-        return -1;
-    }
+
+    if (round.length === 0) return -1;
+
     return solve(round, copy);
 }
 
 function findSolutions() {
     roundNum = 1;
     const poss = document.querySelector('#possibilities');
-    const initial = document.querySelector('#initial');
-    const initialInversed = document.querySelector('#initialInverse');
-    if (initialInversed.checked) {
-        initial.value = `not${initial.value}`;
-    }
+    // const initial = document.querySelector('#initial');
+    // const initialInversed = document.querySelector('#initialInverse');
+    // if (initialInversed.checked) {
+    //     initial.value = `not${initial.value}`;
+    // }
     // const radios = document.querySelector('input[type=radio]');
     // if (radios !== null ){
     //     radios.removeEventListener('change', _handleChange);
@@ -614,11 +699,14 @@ function findSolutions() {
     console.log('map layout:', orderField.value);
     console.log('player amount:', amount.value);
     console.log('advanced game:', advanced.checked);
-    findSolution(amount.value, initial.value, advanced.checked);
+    // console.log('initial clue:', initial.value);
+    // findSolution(amount.value, initial.value, advanced.checked);
+    findSolution(amount.value, advanced.checked);
     console.timeEnd();
 }
 
-function findSolution(playerAmount, initialClue, advanced = false) {
+// function findSolution(playerAmount, initialClue, advanced = false) {
+function findSolution(playerAmount, advanced = false) {
     globalPlayerAmount = playerAmount;
     const inForestDesert = inTerrain('forest', 'desert');
     const inForestWater = inTerrain('forest', 'water');
@@ -741,7 +829,6 @@ function findSolution(playerAmount, initialClue, advanced = false) {
         combined.push(notWithinTwoFromShack.hexes);
         combined.push(notWithinTwoFromBear.hexes);
         combined.push(notWithinTwoFromCougar.hexes);
-        combined.push(notWithinTwoFromCougar.hexes);
         combined.push(withinThreeFromBlack.hexes);
         combined.push(notWithinThreeFromBlack.hexes);
         combined.push(notWithinThreeFromBlue.hexes);
@@ -766,7 +853,6 @@ function findSolution(playerAmount, initialClue, advanced = false) {
         comb.push(notWithinTwoFromStone);
         comb.push(notWithinTwoFromShack);
         comb.push(notWithinTwoFromBear);
-        comb.push(notWithinTwoFromCougar);
         comb.push(notWithinTwoFromCougar);
         comb.push(withinThreeFromBlack);
         comb.push(notWithinThreeFromBlack);
@@ -832,36 +918,178 @@ function seekSolution(combined, firstClue = {id:0}, secondClue = {id:0}, thirdCl
 
         if (solution.length === 1) {
             solutionsArray.push(solution[0]);
-            hexesArray.push(a);
+            hexesArray.push({
+                hex: solution[0],
+                hexes: a
+            });
         }
     }
     const cc = [];
-
     possibleSolution = unique(solutionsArray);
     hexesArray.forEach(arr => {
         possibleClues.forEach(arr2 => {
-            arr.forEach(ar => {
+            arr.hexes.forEach(ar => {
                 if (_.isEqual(ar, arr2.hexes)) {
                     cc.push(arr2);
                 }
             });
         });
     });
-
     createList(unique(cc), roundNum, firstClue, secondClue, thirdClue, fourthClue, fifthClue);
+    possibleCombinations(hexesArray);
     roundNum++;
     return [unique(solutionsArray), hexesArray];
 }
 
+function possibleCombinations(combinations) {
+    const clueCombinations = [];
+    combinations.forEach(cmb => {
+        // const inner = [];
+        const obj = {
+            hex: cmb.hex,
+            clues: []
+        };
+        cmb.hexes.forEach(c => {
+            possibleClues.forEach(pc => {
+                if (c === pc.hexes) {
+                    obj.clues.push(pc.name);
+                    // inner.push(pc.name);
+                }
+            });
+        });
+        // inner.push(obj);
+        clueCombinations.push(obj);
+    });
+    const clues = document.getElementById('possibleClueCombinations');
+    clues.innerHTML = '';
+
+    const count = document.createElement('h3');
+    count.innerHTML = `Possible clue combinations count: ${clueCombinations.length}`;
+    clues.appendChild(count);
+    clueCombinations.forEach(l => {
+        const list = document.createElement('ul');
+        l.clues.forEach(c => {
+            const item = document.createElement('li');
+            item.innerText = c;
+            list.appendChild(item);
+        });
+        const item = document.createElement('li');
+        item.innerText = `Answer: {${l.hex.x},${l.hex.y}}`;
+        list.appendChild(item);
+        clues.appendChild(list);
+    });
+}
+
+function whiteHex(e) {
+    fullMap.forEach(he2 => {
+        if (this.hex.id === he2.id) {
+            const point = he2.toPoint();
+            point.y += 5;
+            const corners = he2.corners().map(corner => corner.add(point));
+            const [firstCorner, ...otherCorners] = corners;
+            const graphics = new PIXI.Graphics();
+
+            // graphics.beginFill(0x00ff00, 0.31);
+            graphics.beginFill(0xffffff, 0.31);
+
+            graphics.moveTo(firstCorner.x, firstCorner.y);
+
+            otherCorners.forEach(({ x, y }) => graphics.lineTo(x, y));
+
+            graphics.lineTo(firstCorner.x, firstCorner.y);
+
+            graphics.endFill();
+            app.stage.addChild(graphics);
+        }
+    });
+}
+
+function grayHex(e) {
+    fullMap.forEach(he2 => {
+        let boo = false;
+        this.hex.hexes.forEach(he => {
+            if (he.id === he2.id) {
+                boo = true;
+            }
+        });
+        if (!boo) {
+            const point = he2.toPoint();
+            point.y += 5;
+            const corners = he2.corners().map(corner => corner.add(point));
+            const [firstCorner, ...otherCorners] = corners;
+            const graphics = new PIXI.Graphics();
+
+            // graphics.beginFill(0x000000, 0.35);
+            graphics.beginFill(0xff0000, 0.35);
+
+            graphics.moveTo(firstCorner.x, firstCorner.y);
+
+            otherCorners.forEach(({ x, y }) => graphics.lineTo(x, y));
+
+            graphics.lineTo(firstCorner.x, firstCorner.y);
+
+            graphics.endFill();
+            app.stage.addChild(graphics);
+        }
+    });
+}
+
 function createList(clues, round, clue1 = {id:0}, clue2 = {id:0}, clue3 = {id:0}, clue4 = {id:0}, clue5 = {id:0}) {
     const poss = document.querySelector('#possibilities');
+    poss.innerHTML = '';
+    const selectedClues = document.createElement('p');
+    let stuff = '<h2>Clues</h2>';
+
+    if (clue1.id !== 0) {
+        stuff = `${stuff}<br>${clue1.name}`;
+    }
+    if (clue2.id !== 0) {
+        stuff = `${stuff}<br>${clue2.name}`;
+    }
+    if (clue3.id !== 0) {
+        stuff = `${stuff}<br>${clue3.name}`;
+    }
+    if (clue4.id !== 0) {
+        stuff = `${stuff}<br>${clue4.name}`;
+    }
+    if (clue5.id !== 0) {
+        stuff = `${stuff}<br>${clue5.name}`;
+    }
+
+    selectedClues.innerHTML = stuff;
+    poss.prepend(selectedClues);
+
     const title = document.createElement("h3");
-    title.innerText = `Clue: ${round}`;
+    title.innerText = (round > globalPlayerAmount) ? 'Answer' : `Clue: ${round}`;
     poss.appendChild(title);
     const ptag = document.createElement('p');
     let txt = '';
+
+    drawMap(fullMap, globalOrder, globalStructures);
+
     possibleSolution.forEach(t => {
-        txt += `{${t.x},${t.y}}`
+        txt += `{${t.x},${t.y}}`;
+        const hh = fullMap.get([t.x, t.y]);
+        if (clue1.id !== 0) {
+            const gg = whiteHex.bind({hex:hh});
+            gg();
+        }
+        if (clue2.id !== 0) {
+            const gg = whiteHex.bind({hex:hh});
+            gg();
+        }
+        if (clue3.id !== 0) {
+            const gg = whiteHex.bind({hex:hh});
+            gg();
+        }
+        if (clue4.id !== 0) {
+            const gg = whiteHex.bind({hex:hh});
+            gg();
+        }
+        if (clue5.id !== 0) {
+            const gg = whiteHex.bind({hex:hh});
+            gg();
+        }
     });
     ptag.innerText = txt;
     clues.sort((a, b) => {
@@ -873,13 +1101,14 @@ function createList(clues, round, clue1 = {id:0}, clue2 = {id:0}, clue3 = {id:0}
     });
 
     for (let i = 0; i < clues.length; i++) {
+        // advanced rules, remove opposite clues
         if (clues[i].opposite === clue1.id
             || clues[i].opposite === clue2.id
             || clues[i].opposite === clue3.id
             || clues[i].opposite === clue4.id
             || clues[i].opposite === clue5.id
         ) {
-            console.log(clues[i]);
+            // console.log(clues[i]);
             continue;
         }
         if (clues[i].id !== clue1.id
@@ -916,7 +1145,26 @@ function createList(clues, round, clue1 = {id:0}, clue2 = {id:0}, clue3 = {id:0}
             poss.appendChild(br);
         }
     }
-
+    if (clue1.id !== 0) {
+        const gg = grayHex.bind({hex:clue1});
+        gg();
+    }
+    if (clue2.id !== 0) {
+        const gg = grayHex.bind({hex:clue2});
+        gg();
+    }
+    if (clue3.id !== 0) {
+        const gg = grayHex.bind({hex:clue3});
+        gg();
+    }
+    if (clue4.id !== 0) {
+        const gg = grayHex.bind({hex:clue4});
+        gg();
+    }
+    if (clue5.id !== 0) {
+        const gg = grayHex.bind({hex:clue5});
+        gg();
+    }
     poss.appendChild(ptag);
 }
 
@@ -934,192 +1182,4 @@ function handleChange(clue, clue1, clue2, clue3, clue4, clue5) {
     }
 
     seekSolution(globalCombined, clue1, clue2, clue3, clue4, clue5)
-}
-
-const unique = array => [...new Set(array.map(item => item))];
-
-function inTerrain(terrain1, terrain2, inverse = false) {
-    const name = inverse ? `Not in ${terrain1} or ${terrain2}` : `In ${terrain1} or ${terrain2}`;
-    const id = inverse ? `notin${terrain1}${terrain2}` : `in${terrain1}${terrain2}`;
-    const opposite = !inverse ? `notin${terrain1}${terrain2}` : `in${terrain1}${terrain2}`;
-    const validHexes = [];
-    fullMap.forEach(hex => {
-        if (inverse) {
-            if (hex.type !== terrain1 && hex.type !== terrain2) {
-                validHexes.push(hex);
-            }
-        } else {
-            if (hex.type === terrain1 || hex.type === terrain2) {
-                validHexes.push(hex);
-            }
-        }
-    });
-
-    return {
-        name,
-        id,
-        opposite,
-        hexes: validHexes
-    };
-}
-
-function withinOneFromTerrain(terrain, inverse = false) {
-    const name = inverse ? `Not within one space from ${terrain}` : `Within one space from ${terrain}`;
-    const id = inverse ? `notonefrom${terrain}` : `onefrom${terrain}`;
-    const opposite = !inverse ? `notonefrom${terrain}` : `onefrom${terrain}`;
-    const validHexes = [];
-    fullMap.forEach(hex1 => {
-        if (hex1.type === terrain) {
-            fullMap.forEach(hex2 => {
-                if (hex1.distance(hex2) <= 1) {
-                    validHexes.push(hex1);
-                    validHexes.push(hex2);
-                }
-            });
-        }
-    });
-    const uniqueValid = unique(validHexes);
-    if (inverse) {
-        return checkInverse(name, id, opposite, uniqueValid);
-    }
-    return {
-        name,
-        id,
-        opposite,
-        hexes: uniqueValid
-    };
-}
-
-function withinOneFromAnimal(inverse = false) {
-    const name = inverse ? `Not within one space from animal territories` : `Within one space from animal territories`;
-    const id = inverse ? `notonefromanimal` : `onefromanimal`;
-    const opposite = !inverse ? `notonefromanimal` : `onefromanimal`;
-    const validHexes = [];
-    fullMap.forEach(hex1 => {
-        if (hex1.hasOwnProperty('animal')) {
-            fullMap.forEach(hex2 => {
-                if (hex1.distance(hex2) <= 1) {
-                    validHexes.push(hex1);
-                    validHexes.push(hex2);
-                }
-            });
-        }
-    });
-    const uniqueValid = unique(validHexes);
-    if (inverse) {
-        return checkInverse(name, id, opposite, uniqueValid);
-    }
-    return {
-        name,
-        id,
-        opposite,
-        hexes: uniqueValid
-    };
-}
-
-function withinTwoFromAnimal(type, inverse = false) {
-    const name = inverse ? `Not within two spaces from ${type} territory` : `Within two spaces from ${type} territory`;
-    const id = inverse ? `nottwofrom${type}` : `twofrom${type}`;
-    const opposite = !inverse ? `nottwofrom${type}` : `twofrom${type}`;
-    const validHexes = [];
-    fullMap.forEach(hex1 => {
-        if (hex1.hasOwnProperty('animal')) {
-            if (hex1.animal === type) {
-                fullMap.forEach(hex2 => {
-                    if (hex1.distance(hex2) <= 2) {
-                        validHexes.push(hex1);
-                        validHexes.push(hex2);
-                    }
-                });
-            }
-        }
-    });
-    const uniqueValid = unique(validHexes);
-    if (inverse) {
-        return checkInverse(name, id, opposite, uniqueValid);
-    }
-    return {
-        name,
-        id,
-        opposite,
-        hexes: uniqueValid
-    };
-}
-
-function withinTwoFromStructureType(type, inverse = false) {
-    const name = inverse ? `Not within two spaces from ${type}` : `Within two spaces from ${type}`;
-    const id = inverse ? `nottwofrom${type}` : `twofrom${type}`;
-    const opposite = !inverse ? `nottwofrom${type}` : `twofrom${type}`;
-    const validHexes = [];
-    fullMap.forEach(hex1 => {
-        if (hex1.hasOwnProperty('structure')) {
-            if (hex1.structure.type === type) {
-                fullMap.forEach(hex2 => {
-                    if (hex1.distance(hex2) <= 2) {
-                        validHexes.push(hex1);
-                        validHexes.push(hex2);
-                    }
-                });
-            }
-        }
-    });
-    const uniqueValid = unique(validHexes);
-    if (inverse) {
-        return checkInverse(name, id, opposite, uniqueValid);
-    }
-    return {
-        name,
-        id,
-        opposite,
-        hexes: uniqueValid
-    };
-}
-
-function withinThreeFromStructureColor(color, inverse = false) {
-    const name = inverse ? `Not within three spaces from ${color} structures` : `Within three spaces from ${color} structures`;
-    const id = inverse ? `notthreefrom${color}` : `threefrom${color}`;
-    const opposite = !inverse ? `notthreefrom${color}` : `threefrom${color}`;
-    const validHexes = [];
-    fullMap.forEach(hex1 => {
-        if (hex1.hasOwnProperty('structure')) {
-            if (hex1.structure.color === color) {
-                fullMap.forEach(hex2 => {
-                    if (hex1.distance(hex2) <= 3) {
-                        validHexes.push(hex1);
-                        validHexes.push(hex2);
-                    }
-                });
-            }
-        }
-    });
-    const uniqueValid = unique(validHexes);
-    if (inverse) {
-        return checkInverse(name, id, opposite, uniqueValid);
-    }
-    return {
-        name,
-        id,
-        opposite,
-        hexes: uniqueValid
-    };
-}
-
-function checkInverse(name, id, opposite, valid) {
-    const inverseArray = [];
-    fullMap.forEach(hex1 => {
-        let found = false;
-        for (let i = 0; i < valid.length; i++) {
-            if (hex1.id === valid[i].id) {
-                found = true;
-                break;
-            }
-        }
-        if (!found) inverseArray.push(hex1);
-    });
-    return {
-        name,
-        id,
-        opposite,
-        hexes: inverseArray
-    };
 }
