@@ -25,6 +25,33 @@ const tile1 = [
     ]
 ];
 
+const tile1f = [
+    [
+        { type: 'forest', animal: 0 },
+        { type: 'desert', animal: 0 },
+        { type: 'desert', animal: 0 },
+        { type: 'desert', animal: -1 },
+        { type: 'swamp', animal: -1 },
+        { type: 'swamp', animal: -1 },
+    ],
+    [
+        { type: 'forest', animal: -1 },
+        { type: 'forest', animal: -1 },
+        { type: 'desert', animal: -1 },
+        { type: 'water', animal: -1 },
+        { type: 'swamp', animal: -1 },
+        { type: 'swamp', animal: -1 },
+    ],
+    [
+        { type: 'forest', animal: -1 },
+        { type: 'forest', animal: -1 },
+        { type: 'water', animal: -1 },
+        { type: 'water', animal: -1 },
+        { type: 'water', animal: -1 },
+        { type: 'water', animal: -1 },
+    ]
+];
+
 const tile2 = [
     [
         { type: 'swamp', animal: 1 },
@@ -52,6 +79,33 @@ const tile2 = [
     ]
 ];
 
+const tile2f = [
+    [
+        { type: 'desert', animal: -1 },
+        { type: 'mountain', animal: -1 },
+        { type: 'mountain', animal: -1 },
+        { type: 'mountain', animal: -1 },
+        { type: 'mountain', animal: -1 },
+        { type: 'swamp', animal: -1 }
+    ],
+    [
+        { type: 'desert', animal: -1 },
+        { type: 'desert', animal: -1 },
+        { type: 'desert', animal: -1 },
+        { type: 'forest', animal: -1 },
+        { type: 'swamp', animal: -1 },
+        { type: 'swamp', animal: -1 }
+    ],
+    [
+        { type: 'forest', animal: -1 },
+        { type: 'forest', animal: -1 },
+        { type: 'forest', animal: -1 },
+        { type: 'forest', animal: 1 },
+        { type: 'forest', animal: 1 },
+        { type: 'swamp', animal: 1 }
+    ],
+];
+
 const tile3 = [
     [
         { type: 'swamp', animal: -1 },
@@ -76,6 +130,33 @@ const tile3 = [
         { type: 'mountain', animal: -1 },
         { type: 'water', animal: -1 },
         { type: 'water', animal: -1 }
+    ]
+];
+
+const tile3f = [
+    [
+        { type: 'water', animal: -1 },
+        { type: 'water', animal: -1 },
+        { type: 'mountain', animal: -1 },
+        { type: 'mountain', animal: -1 },
+        { type: 'mountain', animal: -1 },
+        { type: 'mountain', animal: 1 }
+    ],
+    [
+        { type: 'water', animal: -1 },
+        { type: 'water', animal: -1 },
+        { type: 'mountain', animal: -1 },
+        { type: 'forest', animal: -1 },
+        { type: 'swamp', animal: 1 },
+        { type: 'swamp', animal: 1 }
+    ],
+    [
+        { type: 'water', animal: -1 },
+        { type: 'forest', animal: -1 },
+        { type: 'forest', animal: -1 },
+        { type: 'forest', animal: -1 },
+        { type: 'swamp', animal: -1 },
+        { type: 'swamp', animal: -1 }
     ]
 ];
 
@@ -106,6 +187,33 @@ const tile4 = [
     ]
 ];
 
+const tile4f = [
+    [
+        { type: 'forest', animal: 1 },
+        { type: 'forest', animal: -1 },
+        { type: 'forest', animal: -1 },
+        { type: 'desert', animal: -1 },
+        { type: 'desert', animal: -1 },
+        { type: 'desert', animal: -1 }
+    ],
+    [
+        { type: 'water', animal: 1 },
+        { type: 'water', animal: -1 },
+        { type: 'water', animal: -1 },
+        { type: 'mountain', animal: -1 },
+        { type: 'desert', animal: -1 },
+        { type: 'desert', animal: -1 }
+    ],
+    [
+        { type: 'mountain', animal: -1 },
+        { type: 'mountain', animal: -1 },
+        { type: 'mountain', animal: -1 },
+        { type: 'mountain', animal: -1 },
+        { type: 'desert', animal: -1 },
+        { type: 'desert', animal: -1 }
+    ]
+];
+
 const tile5 = [
     [
         { type: 'swamp', animal: -1 },
@@ -130,6 +238,33 @@ const tile5 = [
         { type: 'water', animal: -1 },
         { type: 'water', animal: 0 },
         { type: 'water', animal: 0 }
+    ]
+];
+
+const tile5f = [
+    [
+        { type: 'water', animal: 0 },
+        { type: 'water', animal: 0 },
+        { type: 'water', animal: -1 },
+        { type: 'water', animal: -1 },
+        { type: 'desert', animal: -1 },
+        { type: 'desert', animal: -1 }
+    ],
+    [
+        { type: 'mountain', animal: 0 },
+        { type: 'mountain', animal: -1 },
+        { type: 'water', animal: -1 },
+        { type: 'desert', animal: -1 },
+        { type: 'desert', animal: -1 },
+        { type: 'swamp', animal: -1 }
+    ],
+    [
+        { type: 'mountain', animal: -1 },
+        { type: 'mountain', animal: -1 },
+        { type: 'mountain', animal: -1 },
+        { type: 'swamp', animal: -1 },
+        { type: 'swamp', animal: -1 },
+        { type: 'swamp', animal: -1 }
     ]
 ];
 
@@ -160,6 +295,33 @@ const tile6 = [
     ]
 ];
 
+const tile6f = [
+    [
+        { type: 'forest', animal: -1 },
+        { type: 'water', animal: -1 },
+        { type: 'water', animal: -1 },
+        { type: 'water', animal: -1 },
+        { type: 'water', animal: -1 },
+        { type: 'mountain', animal: -1 }
+    ],
+    [
+        { type: 'forest', animal: -1 },
+        { type: 'forest', animal: -1 },
+        { type: 'swamp', animal: -1 },
+        { type: 'swamp', animal: -1 },
+        { type: 'mountain', animal: -1 },
+        { type: 'mountain', animal: 0 }
+    ],
+    [
+        { type: 'forest', animal: -1 },
+        { type: 'swamp', animal: -1 },
+        { type: 'swamp', animal: -1 },
+        { type: 'swamp', animal: -1 },
+        { type: 'desert', animal: -1 },
+        { type: 'desert', animal: 0 }
+    ]
+];
+
 const app = new PIXI.Application({ transparent: true });
 
 const Hex = Honeycomb.extendHex({ size: 30, orientation: 'flat' });
@@ -172,8 +334,6 @@ let possibleClues;
 let globalPlayerAmount = 0;
 let globalCombined = [];
 let globalOrder;
-let globalRejected = [];
-let globalApproved = [];
 let globalStructures = [];
 let roundNum = 1;
 let possibleSolution;
@@ -336,14 +496,10 @@ function drawMap(map, order, structures = []) {
         });
     }
 
-    // console.log(app.stage);
     console.timeEnd();
 }
 
 const fullMap = Grid.rectangle({width: 12, height: 9});
-const hexTest1 = fullMap.get([0,0]);
-const hexTest2 = fullMap.get([0,3]);
-console.log(hexTest1.distance(hexTest2));
 const orderField = document.querySelector('textarea');
 
 function combine(arr1, arr2) {
@@ -434,99 +590,69 @@ function placeTilesFull() {
                 }
                 break;
             case "1f":
-                rev = tile1.map(row => row);
-                rev[0].reverse();
-                rev[1].reverse();
-                rev[2].reverse();
-                rev.reverse();
                 if(count) {
-                    tileOrder[row] = combine(tileOrder[row], rev[0]);
-                    tileOrder[row+1] = combine(tileOrder[row + 1], rev[1]);
-                    tileOrder[row+2] = combine(tileOrder[row + 2], rev[2]);
+                    tileOrder[row] = combine(tileOrder[row], tile1f[0]);
+                    tileOrder[row+1] = combine(tileOrder[row + 1], tile1f[1]);
+                    tileOrder[row+2] = combine(tileOrder[row + 2], tile1f[2]);
                 } else {
-                    tileOrder.push(rev[0]);
-                    tileOrder.push(rev[1]);
-                    tileOrder.push(rev[2]);
+                    tileOrder.push(tile1f[0]);
+                    tileOrder.push(tile1f[1]);
+                    tileOrder.push(tile1f[2]);
                 }
                 break;
             case "2f":
-                rev = tile2.map(row => row);
-                rev[0].reverse();
-                rev[1].reverse();
-                rev[2].reverse();
-                rev.reverse();
                 if(count) {
-                    tileOrder[row] = combine(tileOrder[row], rev[0]);
-                    tileOrder[row+1] = combine(tileOrder[row + 1], rev[1]);
-                    tileOrder[row+2] = combine(tileOrder[row + 2], rev[2]);
+                    tileOrder[row] = combine(tileOrder[row], tile2f[0]);
+                    tileOrder[row+1] = combine(tileOrder[row + 1], tile2f[1]);
+                    tileOrder[row+2] = combine(tileOrder[row + 2], tile2f[2]);
                 } else {
-                    tileOrder.push(rev[0]);
-                    tileOrder.push(rev[1]);
-                    tileOrder.push(rev[2]);
+                    tileOrder.push(tile2f[0]);
+                    tileOrder.push(tile2f[1]);
+                    tileOrder.push(tile2f[2]);
                 }
                 break;
             case "3f":
-                rev = tile3.map(row => row);
-                rev[0].reverse();
-                rev[1].reverse();
-                rev[2].reverse();
-                rev.reverse();
                 if(count) {
-                    tileOrder[row] = combine(tileOrder[row], rev[0]);
-                    tileOrder[row+1] = combine(tileOrder[row + 1], rev[1]);
-                    tileOrder[row+2] = combine(tileOrder[row + 2], rev[2]);
+                    tileOrder[row] = combine(tileOrder[row], tile3f[0]);
+                    tileOrder[row+1] = combine(tileOrder[row + 1], tile3f[1]);
+                    tileOrder[row+2] = combine(tileOrder[row + 2], tile3f[2]);
                 } else {
-                    tileOrder.push(rev[0]);
-                    tileOrder.push(rev[1]);
-                    tileOrder.push(rev[2]);
+                    tileOrder.push(tile3f[0]);
+                    tileOrder.push(tile3f[1]);
+                    tileOrder.push(tile3f[2]);
                 }
                 break;
             case "4f":
-                rev = tile4.map(row => row);
-                rev[0].reverse();
-                rev[1].reverse();
-                rev[2].reverse();
-                rev.reverse();
                 if(count) {
-                    tileOrder[row] = combine(tileOrder[row], rev[0]);
-                    tileOrder[row+1] = combine(tileOrder[row + 1], rev[1]);
-                    tileOrder[row+2] = combine(tileOrder[row + 2], rev[2]);
+                    tileOrder[row] = combine(tileOrder[row], tile4f[0]);
+                    tileOrder[row+1] = combine(tileOrder[row + 1], tile4f[1]);
+                    tileOrder[row+2] = combine(tileOrder[row + 2], tile4f[2]);
                 } else {
-                    tileOrder.push(rev[0]);
-                    tileOrder.push(rev[1]);
-                    tileOrder.push(rev[2]);
+                    tileOrder.push(tile4f[0]);
+                    tileOrder.push(tile4f[1]);
+                    tileOrder.push(tile4f[2]);
                 }
                 break;
             case "5f":
-                rev = tile5.map(row => row);
-                rev[0].reverse();
-                rev[1].reverse();
-                rev[2].reverse();
-                rev.reverse();
                 if(count) {
-                    tileOrder[row] = combine(tileOrder[row], rev[0]);
-                    tileOrder[row+1] = combine(tileOrder[row + 1], rev[1]);
-                    tileOrder[row+2] = combine(tileOrder[row + 2], rev[2]);
+                    tileOrder[row] = combine(tileOrder[row], tile5f[0]);
+                    tileOrder[row+1] = combine(tileOrder[row + 1], tile5f[1]);
+                    tileOrder[row+2] = combine(tileOrder[row + 2], tile5f[2]);
                 } else {
-                    tileOrder.push(rev[0]);
-                    tileOrder.push(rev[1]);
-                    tileOrder.push(rev[2]);
+                    tileOrder.push(tile5f[0]);
+                    tileOrder.push(tile5f[1]);
+                    tileOrder.push(tile5f[2]);
                 }
                 break;
             case "6f":
-                rev = tile6.map(row => row);
-                rev[0].reverse();
-                rev[1].reverse();
-                rev[2].reverse();
-                rev.reverse();
                 if(count) {
-                    tileOrder[row] = combine(tileOrder[row], rev[0]);
-                    tileOrder[row+1] = combine(tileOrder[row + 1], rev[1]);
-                    tileOrder[row+2] = combine(tileOrder[row + 2], rev[2]);
+                    tileOrder[row] = combine(tileOrder[row], tile6f[0]);
+                    tileOrder[row+1] = combine(tileOrder[row + 1], tile6f[1]);
+                    tileOrder[row+2] = combine(tileOrder[row + 2], tile6f[2]);
                 } else {
-                    tileOrder.push(rev[0]);
-                    tileOrder.push(rev[1]);
-                    tileOrder.push(rev[2]);
+                    tileOrder.push(tile6f[0]);
+                    tileOrder.push(tile6f[1]);
+                    tileOrder.push(tile6f[2]);
                 }
                 break;
             default:
@@ -887,6 +1013,7 @@ function seekSolution(combined, firstClue = {id:0}, secondClue = {id:0}, thirdCl
         let test4 = false;
         let test5 = false;
 
+        // Check for known clues
         a.forEach(b => {
             if (!test1 && firstClue.id !== 0) {
                 test1 = _.isEqual(b, firstClue.hexes);
@@ -944,40 +1071,18 @@ function seekSolution(combined, firstClue = {id:0}, secondClue = {id:0}, thirdCl
 function possibleCombinations(combinations) {
     const clueCombinations = [];
     combinations.forEach(cmb => {
-        // const inner = [];
         const obj = {
             hex: cmb.hex,
             clues: []
         };
         cmb.hexes.forEach(c => {
             possibleClues.forEach(pc => {
-                if (c === pc.hexes) {
-                    obj.clues.push(pc.name);
-                    // inner.push(pc.name);
-                }
+                if (c === pc.hexes) obj.clues.push(pc.name);
             });
         });
-        // inner.push(obj);
         clueCombinations.push(obj);
     });
-    const clues = document.getElementById('possibleClueCombinations');
-    clues.innerHTML = '';
-
-    const count = document.createElement('h3');
-    count.innerHTML = `Possible clue combinations count: ${clueCombinations.length}`;
-    clues.appendChild(count);
-    clueCombinations.forEach(l => {
-        const list = document.createElement('ul');
-        l.clues.forEach(c => {
-            const item = document.createElement('li');
-            item.innerText = c;
-            list.appendChild(item);
-        });
-        const item = document.createElement('li');
-        item.innerText = `Answer: {${l.hex.x},${l.hex.y}}`;
-        list.appendChild(item);
-        clues.appendChild(list);
-    });
+    createCombinationsList(clueCombinations);
 }
 
 function whiteHex(e) {
@@ -1032,140 +1137,6 @@ function grayHex(e) {
             app.stage.addChild(graphics);
         }
     });
-}
-
-function createList(clues, round, clue1 = {id:0}, clue2 = {id:0}, clue3 = {id:0}, clue4 = {id:0}, clue5 = {id:0}) {
-    const poss = document.querySelector('#possibilities');
-    poss.innerHTML = '';
-    const selectedClues = document.createElement('p');
-    let stuff = '<h2>Clues</h2>';
-
-    if (clue1.id !== 0) {
-        stuff = `${stuff}<br>${clue1.name}`;
-    }
-    if (clue2.id !== 0) {
-        stuff = `${stuff}<br>${clue2.name}`;
-    }
-    if (clue3.id !== 0) {
-        stuff = `${stuff}<br>${clue3.name}`;
-    }
-    if (clue4.id !== 0) {
-        stuff = `${stuff}<br>${clue4.name}`;
-    }
-    if (clue5.id !== 0) {
-        stuff = `${stuff}<br>${clue5.name}`;
-    }
-
-    selectedClues.innerHTML = stuff;
-    poss.prepend(selectedClues);
-
-    const title = document.createElement("h3");
-    title.innerText = (round > globalPlayerAmount) ? 'Answer' : `Clue: ${round}`;
-    poss.appendChild(title);
-    const ptag = document.createElement('p');
-    let txt = '';
-
-    drawMap(fullMap, globalOrder, globalStructures);
-
-    possibleSolution.forEach(t => {
-        txt += `{${t.x},${t.y}}`;
-        const hh = fullMap.get([t.x, t.y]);
-        if (clue1.id !== 0) {
-            const gg = whiteHex.bind({hex:hh});
-            gg();
-        }
-        if (clue2.id !== 0) {
-            const gg = whiteHex.bind({hex:hh});
-            gg();
-        }
-        if (clue3.id !== 0) {
-            const gg = whiteHex.bind({hex:hh});
-            gg();
-        }
-        if (clue4.id !== 0) {
-            const gg = whiteHex.bind({hex:hh});
-            gg();
-        }
-        if (clue5.id !== 0) {
-            const gg = whiteHex.bind({hex:hh});
-            gg();
-        }
-    });
-    ptag.innerText = txt;
-    clues.sort((a, b) => {
-        const keyA = a.id;
-        const keyB = b.id;
-        if (keyA < keyB) return -1;
-        if (keyA > keyB) return 1;
-        return 0;
-    });
-
-    for (let i = 0; i < clues.length; i++) {
-        // advanced rules, remove opposite clues
-        if (clues[i].opposite === clue1.id
-            || clues[i].opposite === clue2.id
-            || clues[i].opposite === clue3.id
-            || clues[i].opposite === clue4.id
-            || clues[i].opposite === clue5.id
-        ) {
-            // console.log(clues[i]);
-            continue;
-        }
-        if (clues[i].id !== clue1.id
-            && clues[i].id !== clue2.id
-            && clues[i].id !== clue3.id
-            && clues[i].id !== clue4.id
-            && clues[i].id !== clue5.id ) {
-            const lab = document.createElement("label");
-            lab.setAttribute("for", `${clues[i].id}-${round}`);
-            lab.innerText = clues[i].name;
-            const inp = document.createElement("input");
-            inp.setAttribute('type', 'radio');
-            inp.setAttribute('name', `round-${round}`);
-            inp.setAttribute('value', clues[i].id);
-            inp.setAttribute('id', `${clues[i].id}-${round}`);
-            // inp.addEventListener('change', handleChange);
-            inp.addEventListener('change', function _handleChange() {
-                if (clue1.id === 0) {
-                    clue1 = clues[i];
-                } else if (clue2.id === 0) {
-                    clue2 = clues[i];
-                } else if (clue3.id === 0) {
-                    clue3 = clues[i];
-                } else if (clue4.id === 0) {
-                    clue4 = clues[i];
-                } else if (clue5.id === 0) {
-                    clue5 = clues[i];
-                }
-                seekSolution(globalCombined, clue1, clue2, clue3, clue4, clue5);
-            });
-            const br = document.createElement('br');
-            poss.appendChild(lab);
-            poss.appendChild(inp);
-            poss.appendChild(br);
-        }
-    }
-    if (clue1.id !== 0) {
-        const gg = grayHex.bind({hex:clue1});
-        gg();
-    }
-    if (clue2.id !== 0) {
-        const gg = grayHex.bind({hex:clue2});
-        gg();
-    }
-    if (clue3.id !== 0) {
-        const gg = grayHex.bind({hex:clue3});
-        gg();
-    }
-    if (clue4.id !== 0) {
-        const gg = grayHex.bind({hex:clue4});
-        gg();
-    }
-    if (clue5.id !== 0) {
-        const gg = grayHex.bind({hex:clue5});
-        gg();
-    }
-    poss.appendChild(ptag);
 }
 
 function handleChange(clue, clue1, clue2, clue3, clue4, clue5) {
