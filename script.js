@@ -11,11 +11,13 @@ let globalPlayerAmount = 0;
 let globalCombined = [];
 let globalOrder;
 let globalStructures = [];
+let globalFiltered = [];
 let roundNum = 1;
 let possibleSolution;
+let globalInitial;
 
 function drawMap(map, order, structures = []) {
-    console.time();
+    console.time('drawMap');
 
     // clear stage
     for (let i = app.stage.children.length - 1; i >= 0; i--) {
@@ -112,7 +114,7 @@ function drawMap(map, order, structures = []) {
         app.stage.addChild(ident);
 
         let text = new PIXI.Text(
-            `${hex.x}, ${hex.y}`,
+            `${hex.x},${hex.y}`,
             {
                 fontFamily : 'Arial',
                 fontSize: 11,
@@ -172,7 +174,7 @@ function drawMap(map, order, structures = []) {
         });
     }
 
-    console.timeEnd();
+    console.timeEnd('drawMap');
 }
 
 const fullMap = Grid.rectangle({width: 12, height: 9});
@@ -183,7 +185,7 @@ function combine(arr1, arr2) {
 }
 
 function placeTilesFull() {
-    console.time();
+    console.time('placeTilesFull');
 
     // clear stage
     for (let i = app.stage.children.length - 1; i >= 0; i--) {
@@ -345,7 +347,7 @@ function placeTilesFull() {
     globalOrder = tileOrder;
     drawMap(fullMap, globalOrder, globalStructures);
 
-    console.timeEnd();
+    console.timeEnd('placeTilesFull');
 }
 
 const hexInput = document.querySelector('#find-hex');
@@ -390,10 +392,8 @@ function handleStructures(shack, stone, color, rgb) {
     handleStone(stone, color, rgb);
 }
 
-
-
-function apply() {
-    console.time();
+function applyStructures() {
+    console.time('apply');
     const bshack = blueshack.value.split(',');
     const bstone = bluestone.value.split(',');
     const gshack = greenshack.value.split(',');
@@ -439,7 +439,7 @@ function apply() {
 
     drawMap(fullMap, globalOrder, globalStructures);
 
-    console.timeEnd();
+    console.timeEnd('apply');
 }
 
 function solve(arr, clues) {
@@ -463,12 +463,22 @@ function solve(arr, clues) {
 
 function findSolutions() {
     roundNum = 1;
+    globalFiltered = [];
     const poss = document.querySelector('#possibilities');
-    // const initial = document.querySelector('#initial');
-    // const initialInversed = document.querySelector('#initialInverse');
-    // if (initialInversed.checked) {
-    //     initial.value = `not${initial.value}`;
-    // }
+    const useInitial = document.querySelector('#useInitial');
+    const amount = document.getElementById('playerAmount');
+    const advanced = document.getElementById('advanced');
+    let initialClue;
+    let initialInverse;
+    let init;
+
+    if (useInitial.checked) {
+        initialClue = document.querySelector('#initial');
+        initialInverse = document.querySelector('#initialInverse');
+        init = initialInverse.checked && advanced.checked ? `not${initialClue.value}` : initialClue.value;
+        roundNum = 2;
+    }
+
     // const radios = document.querySelector('input[type=radio]');
     // if (radios !== null ){
     //     radios.removeEventListener('change', _handleChange);
@@ -495,16 +505,17 @@ function findSolutions() {
 
     // correct habitat: {4,3}
 
-    console.time();
-    const amount = document.getElementById('playerAmount');
-    const advanced = document.getElementById('advanced');
+    console.time('findSolution');
     console.log('map layout:', orderField.value);
     console.log('player amount:', amount.value);
     console.log('advanced game:', advanced.checked);
-    // console.log('initial clue:', initial.value);
+    if (useInitial.checked) {
+        console.log('initial clue:', init);
+        globalInitial = init;
+    }
     // findSolution(amount.value, initial.value, advanced.checked);
     findSolution(amount.value, advanced.checked);
-    console.timeEnd();
+    console.timeEnd('findSolution');
 }
 
 // function findSolution(playerAmount, initialClue, advanced = false) {
@@ -662,17 +673,26 @@ function findSolution(playerAmount, advanced = false) {
         comb.push(notWithinThreeFromGreen);
         comb.push(notWithinThreeFromWhite);
     }
-
     possibleClues = comb;
     globalCombined = combined;
 
-    const seek = seekSolution(globalCombined);
-
-    console.log(unique(seek[0]));
-    console.log(unique(seek[0]).length);
+    let init;
+    let seek;
+    if (globalInitial) {
+        comb.forEach(c => {
+            if (c.id === globalInitial) {
+                seek = seekSolution(globalCombined, c);
+            }
+        })
+    } else {
+        seek = seekSolution(globalCombined);
+    }
+    // console.log(unique(seek[0]));
+    // console.log(unique(seek[0]).length);
 }
 
 function seekSolution(combined, firstClue = {id:0}, secondClue = {id:0}, thirdClue = {id:0}, fourthClue = {id:0}, fifthClue = {id:0}) {
+    console.time('seekSolution');
     console.log('clue1', firstClue);
     console.log('clue2', secondClue);
     console.log('clue3', thirdClue);
@@ -680,43 +700,103 @@ function seekSolution(combined, firstClue = {id:0}, secondClue = {id:0}, thirdCl
     console.log('clue5', fifthClue);
     const solutionsArray = [];
     const hexesArray = [];
-    let cmb = Combinatorics.bigCombination(globalCombined, globalPlayerAmount);
     let a;
-    while(a = cmb.next()) {
-        let test1 = false;
-        let test2 = false;
-        let test3 = false;
-        let test4 = false;
-        let test5 = false;
+    let c = [];
+    if (globalFiltered.length === 0) {
+        let cmb = Combinatorics.bigCombination(globalCombined, globalPlayerAmount);
+        console.time('combinations next');
+        while(a = cmb.next()) {
+            let test1 = false;
 
-        // Check for known clues
-        a.forEach(b => {
-            if (!test1 && firstClue.id !== 0) {
-                test1 = _.isEqual(b, firstClue.hexes);
-            }
-            if (!test2 && secondClue.id !== 0) {
-                test2 = _.isEqual(b, secondClue.hexes);
-            }
-            if (!test3 && thirdClue.id !== 0) {
-                test3 = _.isEqual(b, thirdClue.hexes);
-            }
-            if (!test4 && fourthClue.id !== 0) {
-                test4 = _.isEqual(b, fourthClue.hexes);
-            }
-            if (!test5 && fifthClue.id !== 0) {
-                test5 = _.isEqual(b, fifthClue.hexes);
-            }
-        });
+            a.forEach(b => {
+                if (!test1 && firstClue.id !== 0) {
+                    test1 = _.isEqual(b, firstClue.hexes);
+                }
+            });
 
-        if ((!test1 && firstClue.id !== 0)
-            || (!test2 && secondClue.id !== 0)
-            || (!test3 && thirdClue.id !== 0)
-            || (!test4 && fourthClue.id !== 0)
-            || (!test5 && fifthClue.id !== 0)
-        ) {
-            continue;
+            if ((!test1 && firstClue.id !== 0)) {
+                continue;
+            }
+            c.push(a);
         }
+        console.timeEnd('combinations next');
 
+        globalFiltered = c.filter(a => {
+            let test1 = false;
+            let test2 = false;
+            let test3 = false;
+            let test4 = false;
+            let test5 = false;
+
+            // Check for known clues
+            a.forEach(b => {
+                if (!test1 && firstClue.id !== 0) {
+                    test1 = _.isEqual(b, firstClue.hexes);
+                }
+                if (!test2 && secondClue.id !== 0) {
+                    test2 = _.isEqual(b, secondClue.hexes);
+                }
+                if (!test3 && thirdClue.id !== 0) {
+                    test3 = _.isEqual(b, thirdClue.hexes);
+                }
+                if (!test4 && fourthClue.id !== 0) {
+                    test4 = _.isEqual(b, fourthClue.hexes);
+                }
+                if (!test5 && fifthClue.id !== 0) {
+                    test5 = _.isEqual(b, fifthClue.hexes);
+                }
+            });
+
+            if ((!test1 && firstClue.id !== 0)
+                || (!test2 && secondClue.id !== 0)
+                || (!test3 && thirdClue.id !== 0)
+                || (!test4 && fourthClue.id !== 0)
+                || (!test5 && fifthClue.id !== 0)
+            ) {
+                return 0;
+            }
+            return a;
+        });
+    } else {
+        globalFiltered = globalFiltered.filter(a => {
+            let test1 = false;
+            let test2 = false;
+            let test3 = false;
+            let test4 = false;
+            let test5 = false;
+
+            // Check for known clues
+            a.forEach(b => {
+                if (!test1 && firstClue.id !== 0) {
+                    test1 = _.isEqual(b, firstClue.hexes);
+                }
+                if (!test2 && secondClue.id !== 0) {
+                    test2 = _.isEqual(b, secondClue.hexes);
+                }
+                if (!test3 && thirdClue.id !== 0) {
+                    test3 = _.isEqual(b, thirdClue.hexes);
+                }
+                if (!test4 && fourthClue.id !== 0) {
+                    test4 = _.isEqual(b, fourthClue.hexes);
+                }
+                if (!test5 && fifthClue.id !== 0) {
+                    test5 = _.isEqual(b, fifthClue.hexes);
+                }
+            });
+
+            if ((!test1 && firstClue.id !== 0)
+                || (!test2 && secondClue.id !== 0)
+                || (!test3 && thirdClue.id !== 0)
+                || (!test4 && fourthClue.id !== 0)
+                || (!test5 && fifthClue.id !== 0)
+            ) {
+                return 0;
+            }
+            return a;
+        });
+    }
+
+    globalFiltered.forEach(a => {
         const solution = solve(fullMap, a);
 
         if (solution.length === 1) {
@@ -726,7 +806,7 @@ function seekSolution(combined, firstClue = {id:0}, secondClue = {id:0}, thirdCl
                 hexes: a
             });
         }
-    }
+    });
     const cc = [];
     possibleSolution = unique(solutionsArray);
     hexesArray.forEach(arr => {
@@ -741,6 +821,9 @@ function seekSolution(combined, firstClue = {id:0}, secondClue = {id:0}, thirdCl
     createList(unique(cc), roundNum, firstClue, secondClue, thirdClue, fourthClue, fifthClue);
     possibleCombinations(hexesArray);
     roundNum++;
+    console.timeEnd('seekSolution');
+    console.log(unique(solutionsArray));
+    console.log(unique(solutionsArray).length);
     return [unique(solutionsArray), hexesArray];
 }
 
@@ -771,13 +854,13 @@ function whiteHex(e) {
             const graphics = new PIXI.Graphics();
 
             // graphics.beginFill(0x00ff00, 0.31);
-            graphics.beginFill(0xffffff, 0.31);
+            graphics.beginFill(0xffffff);
+            graphics.drawCircle(firstCorner.x - 12, firstCorner.y, 5);
+            // graphics.moveTo(firstCorner.x, firstCorner.y);
 
-            graphics.moveTo(firstCorner.x, firstCorner.y);
+            // otherCorners.forEach(({ x, y }) => graphics.lineTo(x, y));
 
-            otherCorners.forEach(({ x, y }) => graphics.lineTo(x, y));
-
-            graphics.lineTo(firstCorner.x, firstCorner.y);
+            // graphics.lineTo(firstCorner.x, firstCorner.y);
 
             graphics.endFill();
             app.stage.addChild(graphics);
@@ -801,13 +884,14 @@ function grayHex(e) {
             const graphics = new PIXI.Graphics();
 
             // graphics.beginFill(0x000000, 0.35);
-            graphics.beginFill(0xff0000, 0.35);
+            graphics.beginFill(0xff0000);
 
-            graphics.moveTo(firstCorner.x, firstCorner.y);
+            graphics.drawCircle(firstCorner.x - 48, firstCorner.y, 5);
+            // graphics.moveTo(firstCorner.x, firstCorner.y);
 
-            otherCorners.forEach(({ x, y }) => graphics.lineTo(x, y));
+            // otherCorners.forEach(({ x, y }) => graphics.lineTo(x, y));
 
-            graphics.lineTo(firstCorner.x, firstCorner.y);
+            // graphics.lineTo(firstCorner.x, firstCorner.y);
 
             graphics.endFill();
             app.stage.addChild(graphics);

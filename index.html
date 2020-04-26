@@ -45,52 +45,55 @@
         <label for="blackstone">Black Stone</label>
         <input type="text" id="blackstone" name="blackstone" placeholder="leave empty if simple">
         <br>
-        <button onclick="apply()">Apply structures</button>
+        <button onclick="applyStructures()">Apply structures</button>
         <br><br>
         <label for="playerAmount">Player amount</label>
         <input type="number" name="playerAmount" id="playerAmount" min="3" max="5" value="4">
         <br>
         <label for="advanced">Advanced game</label>
         <input type="checkbox" name="advanced" id="advanced" value="yes">
-<!--        <br><br>-->
-<!--        <label for="initial">Initial clue</label>-->
-<!--        <br>-->
-<!--        <select name="initialClue" id="initial">-->
-<!--            <optgroup label="In terrain">-->
-<!--                <option value="inforestdesert">In Forest or Desert</option>-->
-<!--                <option value="inforestswamp">In Forest or Swamp</option>-->
-<!--                <option value="inforestwater">In Forest or Water</option>-->
-<!--                <option value="inforestmountain">In Forest or Mountain</option>-->
-<!--                <option value="indesertswamp">In Desert or Swamp</option>-->
-<!--                <option value="indesertwater">In Desert or Water</option>-->
-<!--                <option value="indesertmountain">In Desert or Mountain</option>-->
-<!--                <option value="inswampwater">In Swamp or Water</option>-->
-<!--                <option value="inswampmountain">In Swamp or Mountain</option>-->
-<!--                <option value="inwatermountain">In Water or Mountain</option>-->
-<!--            </optgroup>-->
-<!--            <optgroup label="Within one space from somewhere">-->
-<!--                <option value="onefromforest">Within one space from Forest</option>-->
-<!--                <option value="onefromdesert">Within one space from Desert</option>-->
-<!--                <option value="onefromswamp">Within one space from Swamp</option>-->
-<!--                <option value="onefromwater">Within one space from Water</option>-->
-<!--                <option value="onefrommountain">Within one space from Mountain</option>-->
-<!--                <option value="onefromanimal">Within one space from Animal territories</option>-->
-<!--            </optgroup>-->
-<!--            <optgroup label="Within two spaces from somewhere">-->
-<!--                <option value="twofrombear">Within two spaces from Bear territory</option>-->
-<!--                <option value="twofromcougar">Within two spaces from Cougar territory</option>-->
-<!--                <option value="twofromshack">Within two spaces from Shack</option>-->
-<!--                <option value="twofromstone">Within two spaces from Standing Stone</option>-->
-<!--            </optgroup>-->
-<!--            <optgroup label="Within three spaces from structure">-->
-<!--                <option value="threefromblue">Within three spaces from Blue structures</option>-->
-<!--                <option value="threefromgreen">Within three spaces from Green structures</option>-->
-<!--                <option value="threefromwhite">Within three spaces from White structures</option>-->
-<!--                <option value="threefromblack">Within three spaces from Black structures</option>-->
-<!--            </optgroup>-->
-<!--        </select>-->
-<!--        <label for="initialInverse">Inverse</label>-->
-<!--        <input type="checkbox" name="initialInverse" id="initialInverse">-->
+        <br><br>
+        <label for="useInitial" title="Helps with searching times, especially with 4-5 players and advanced game">Use initial clue</label>
+        <input type="checkbox" value="0" id="useInitial" name="useInitial">
+        <br>
+        <label for="initial" title="Your clue">Initial clue</label>
+        <br>
+        <select name="initialClue" id="initial">
+            <optgroup label="In terrain">
+                <option value="inforestdesert">In Forest or Desert</option>
+                <option value="inforestswamp">In Forest or Swamp</option>
+                <option value="inforestwater">In Forest or Water</option>
+                <option value="inforestmountain">In Forest or Mountain</option>
+                <option value="indesertswamp">In Desert or Swamp</option>
+                <option value="indesertwater">In Desert or Water</option>
+                <option value="indesertmountain">In Desert or Mountain</option>
+                <option value="inswampwater">In Swamp or Water</option>
+                <option value="inswampmountain">In Swamp or Mountain</option>
+                <option value="inwatermountain">In Water or Mountain</option>
+            </optgroup>
+            <optgroup label="Within one space from somewhere">
+                <option value="onefromforest">Within one space from Forest</option>
+                <option value="onefromdesert">Within one space from Desert</option>
+                <option value="onefromswamp">Within one space from Swamp</option>
+                <option value="onefromwater">Within one space from Water</option>
+                <option value="onefrommountain">Within one space from Mountain</option>
+                <option value="onefromanimal">Within one space from Animal territories</option>
+            </optgroup>
+            <optgroup label="Within two spaces from somewhere">
+                <option value="twofrombear">Within two spaces from Bear territory</option>
+                <option value="twofromcougar">Within two spaces from Cougar territory</option>
+                <option value="twofromshack">Within two spaces from Shack</option>
+                <option value="twofromstone">Within two spaces from Standing Stone</option>
+            </optgroup>
+            <optgroup label="Within three spaces from structure">
+                <option value="threefromblue">Within three spaces from Blue structures</option>
+                <option value="threefromgreen">Within three spaces from Green structures</option>
+                <option value="threefromwhite">Within three spaces from White structures</option>
+                <option value="threefromblack">Within three spaces from Black structures</option>
+            </optgroup>
+        </select>
+        <label for="initialInverse">Inverse</label>
+        <input type="checkbox" name="initialInverse" id="initialInverse">
         <br><br>
         <button onclick="findSolutions()">Find solutions</button>
     </div>

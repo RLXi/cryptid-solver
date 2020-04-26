@@ -168,15 +168,15 @@ function withinThreeFromStructureColor(color, inverse = false) {
 
 function checkInverse(name, id, opposite, valid) {
     const inverseArray = [];
-    fullMap.forEach(hex1 => {
+    fullMap.forEach(hex => {
         let found = false;
         for (let i = 0; i < valid.length; i++) {
-            if (hex1.id === valid[i].id) {
+            if (hex.id === valid[i].id) {
                 found = true;
                 break;
             }
         }
-        if (!found) inverseArray.push(hex1);
+        if (!found) inverseArray.push(hex);
     });
     return {
         name,

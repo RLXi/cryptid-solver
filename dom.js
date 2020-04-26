@@ -1,4 +1,5 @@
 function createCombinationsList(clueCombinations) {
+    console.time('createCombinationsList');
     const clues = document.getElementById('possibleClueCombinations');
     clues.innerHTML = '';
 
@@ -17,9 +18,11 @@ function createCombinationsList(clueCombinations) {
         list.appendChild(item);
         clues.appendChild(list);
     });
+    console.timeEnd('createCombinationsList');
 }
 
 function createList(clues, round, clue1 = {id:0}, clue2 = {id:0}, clue3 = {id:0}, clue4 = {id:0}, clue5 = {id:0}) {
+    console.time('createList');
     const poss = document.querySelector('#possibilities');
     poss.innerHTML = '';
     const selectedClues = document.createElement('p');
@@ -45,7 +48,8 @@ function createList(clues, round, clue1 = {id:0}, clue2 = {id:0}, clue3 = {id:0}
     poss.prepend(selectedClues);
 
     const title = document.createElement("h3");
-    title.innerText = (round > globalPlayerAmount) ? 'Answer' : `Clue: ${round}`;
+    // title.innerText = (round > globalPlayerAmount) ? 'Answer' : `Clue: ${round}`;
+    title.innerText = (possibleSolution.length === 1) ? 'Answer' : `Clue: ${round}`;
     poss.appendChild(title);
     const ptag = document.createElement('p');
     let txt = '';
@@ -151,4 +155,5 @@ function createList(clues, round, clue1 = {id:0}, clue2 = {id:0}, clue3 = {id:0}
         gg();
     }
     poss.appendChild(ptag);
+    console.timeEnd('createList');
 }
