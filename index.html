@@ -1,110 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>cryptid-solver</title>
+    <link rel="stylesheet" href="styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/js-combinatorics@0.5"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/5.2.1/pixi.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.9.1/underscore-min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.0/jquery.min.js"></script>
     <script src="https://unpkg.com/honeycomb-grid@3.1.5/dist/honeycomb.min.js"></script>
-</head>
-<body>
-    <div style="position:relative;margin:auto;">
-        <label for="tileLayout">Map layout</label>
-        <br>
-        <textarea name="tileOrder" id="tileLayout" cols="30" rows="2" placeholder="eg. 6,2f,5,4,3,1"></textarea>
-        <br>
-        <button onclick="placeTilesFull()">Draw tiles</button>
-        <br>
-<!--        <input type="text" id="find-hex">-->
-<!--        <button onclick="findHex()">Find hex</button>-->
-<!--        <br>-->
-        <br>
-        <span>Structures</span>
-        <br>
-        <label for="blueshack">Blue Shack</label>
-        <input type="text" id="blueshack" name="blueshack" placeholder="eg. 9,1">
-        <label for="bluestone">Blue Stone</label>
-        <input type="text" id="bluestone" name="bluestone" placeholder="eg. 9,8">
-        <br>
-        <label for="whiteshack">White Shack</label>
-        <input type="text" id="whiteshack" name="whiteshack" placeholder="eg. 4,6">
-        <label for="whitestone">White Stone</label>
-        <input type="text" id="whitestone" name="whitestone" placeholder="eg. 3,4">
-        <br>
-        <label for="greenshack">Green Shack</label>
-        <input type="text" id="greenshack" name="greenshack" placeholder="eg. 2,4">
-        <label for="greenstone">Green Stone</label>
-        <input type="text" id="greenstone" name="greenstone" placeholder="eg. 2,6">
-        <br>
-        <label for="blackshack">Black Shack</label>
-        <input type="text" id="blackshack" name="blackshack" placeholder="leave empty if simple">
-        <label for="blackstone">Black Stone</label>
-        <input type="text" id="blackstone" name="blackstone" placeholder="leave empty if simple">
-        <br>
-        <button onclick="applyStructures()">Apply structures</button>
-        <br><br>
-        <label for="playerAmount">Player amount</label>
-        <input type="number" name="playerAmount" id="playerAmount" min="3" max="5" value="4">
-        <br>
-        <label for="advanced">Advanced game</label>
-        <input type="checkbox" name="advanced" id="advanced" value="yes">
-        <br><br>
-        <label for="useInitial" title="Helps with searching times, especially with 4-5 players and advanced game">Use initial clue</label>
-        <input type="checkbox" value="0" id="useInitial" name="useInitial">
-        <br>
-        <label for="initial" title="Your clue">Initial clue</label>
-        <br>
-        <select name="initialClue" id="initial">
-            <optgroup label="In terrain">
-                <option value="inforestdesert">In Forest or Desert</option>
-                <option value="inforestswamp">In Forest or Swamp</option>
-                <option value="inforestwater">In Forest or Water</option>
-                <option value="inforestmountain">In Forest or Mountain</option>
-                <option value="indesertswamp">In Desert or Swamp</option>
-                <option value="indesertwater">In Desert or Water</option>
-                <option value="indesertmountain">In Desert or Mountain</option>
-                <option value="inswampwater">In Swamp or Water</option>
-                <option value="inswampmountain">In Swamp or Mountain</option>
-                <option value="inwatermountain">In Water or Mountain</option>
-            </optgroup>
-            <optgroup label="Within one space from somewhere">
-                <option value="onefromforest">Within one space from Forest</option>
-                <option value="onefromdesert">Within one space from Desert</option>
-                <option value="onefromswamp">Within one space from Swamp</option>
-                <option value="onefromwater">Within one space from Water</option>
-                <option value="onefrommountain">Within one space from Mountain</option>
-                <option value="onefromanimal">Within one space from Animal territories</option>
-            </optgroup>
-            <optgroup label="Within two spaces from somewhere">
-                <option value="twofrombear">Within two spaces from Bear territory</option>
-                <option value="twofromcougar">Within two spaces from Cougar territory</option>
-                <option value="twofromshack">Within two spaces from Shack</option>
-                <option value="twofromstone">Within two spaces from Standing Stone</option>
-            </optgroup>
-            <optgroup label="Within three spaces from structure">
-                <option value="threefromblue">Within three spaces from Blue structures</option>
-                <option value="threefromgreen">Within three spaces from Green structures</option>
-                <option value="threefromwhite">Within three spaces from White structures</option>
-                <option value="threefromblack">Within three spaces from Black structures</option>
-            </optgroup>
-        </select>
-        <label for="initialInverse">Inverse</label>
-        <input type="checkbox" name="initialInverse" id="initialInverse">
-        <br><br>
-        <button onclick="findSolutions()">Find solutions</button>
+  </head>
+  <body>
+    <div class="root">
+      <div class="controls">
+        <button toggle-possibilities>Toggle clue list</button>
+        <button toggle-clue-combinations>Toggle clue combinations list</button>
+      </div>
+      <br />
+      <label for="tileLayout">Map layout</label>
+      <br />
+      <textarea
+        name="tileOrder"
+        id="tileLayout"
+        cols="30"
+        rows="2"
+        placeholder="eg. 6,2f,5,4,3,1"
+      ></textarea>
+      <br />
+      <button onclick="placeTilesFull()">Draw tiles</button>
+      <br />
+      <!--        <input type="text" id="find-hex">-->
+      <!--        <button onclick="findHex()">Find hex</button>-->
+      <!--        <br>-->
+      <br />
+      <span>Structures</span>
+      <br />
+      <label for="blueshack">Blue Shack</label>
+      <input
+        type="text"
+        id="blueshack"
+        name="blueshack"
+        placeholder="eg. 9,1"
+      />
+      <label for="bluestone">Blue Stone</label>
+      <input
+        type="text"
+        id="bluestone"
+        name="bluestone"
+        placeholder="eg. 9,8"
+      />
+      <br />
+      <label for="whiteshack">White Shack</label>
+      <input
+        type="text"
+        id="whiteshack"
+        name="whiteshack"
+        placeholder="eg. 4,6"
+      />
+      <label for="whitestone">White Stone</label>
+      <input
+        type="text"
+        id="whitestone"
+        name="whitestone"
+        placeholder="eg. 3,4"
+      />
+      <br />
+      <label for="greenshack">Green Shack</label>
+      <input
+        type="text"
+        id="greenshack"
+        name="greenshack"
+        placeholder="eg. 2,4"
+      />
+      <label for="greenstone">Green Stone</label>
+      <input
+        type="text"
+        id="greenstone"
+        name="greenstone"
+        placeholder="eg. 2,6"
+      />
+      <br />
+      <label for="blackshack">Black Shack</label>
+      <input
+        type="text"
+        id="blackshack"
+        name="blackshack"
+        placeholder="leave empty if simple"
+      />
+      <label for="blackstone">Black Stone</label>
+      <input
+        type="text"
+        id="blackstone"
+        name="blackstone"
+        placeholder="leave empty if simple"
+      />
+      <br />
+      <button onclick="applyStructures()">Apply structures</button>
+      <br /><br />
+      <label for="playerAmount">Player amount</label>
+      <input
+        type="number"
+        name="playerAmount"
+        id="playerAmount"
+        min="3"
+        max="5"
+        value="4"
+      />
+      <br />
+      <label for="advanced">Advanced game</label>
+      <input type="checkbox" name="advanced" id="advanced" value="yes" />
+      <br /><br />
+      <label
+        for="useInitial"
+        title="Helps with searching times, especially with 4-5 players and advanced game"
+        >Use initial clue</label
+      >
+      <input type="checkbox" value="0" id="useInitial" name="useInitial" />
+      <br />
+      <label for="initial" title="Your clue">Initial clue</label>
+      <br />
+      <select name="initialClue" id="initial">
+        <optgroup label="In terrain">
+          <option value="inforestdesert">In Forest or Desert</option>
+          <option value="inforestswamp">In Forest or Swamp</option>
+          <option value="inforestwater">In Forest or Water</option>
+          <option value="inforestmountain">In Forest or Mountain</option>
+          <option value="indesertswamp">In Desert or Swamp</option>
+          <option value="indesertwater">In Desert or Water</option>
+          <option value="indesertmountain">In Desert or Mountain</option>
+          <option value="inswampwater">In Swamp or Water</option>
+          <option value="inswampmountain">In Swamp or Mountain</option>
+          <option value="inwatermountain">In Water or Mountain</option>
+        </optgroup>
+        <optgroup label="Within one space from somewhere">
+          <option value="onefromforest">Within one space from Forest</option>
+          <option value="onefromdesert">Within one space from Desert</option>
+          <option value="onefromswamp">Within one space from Swamp</option>
+          <option value="onefromwater">Within one space from Water</option>
+          <option value="onefrommountain">
+            Within one space from Mountain
+          </option>
+          <option value="onefromanimal">
+            Within one space from Animal territories
+          </option>
+        </optgroup>
+        <optgroup label="Within two spaces from somewhere">
+          <option value="twofrombear">
+            Within two spaces from Bear territory
+          </option>
+          <option value="twofromcougar">
+            Within two spaces from Cougar territory
+          </option>
+          <option value="twofromshack">Within two spaces from Shack</option>
+          <option value="twofromstone">
+            Within two spaces from Standing Stone
+          </option>
+        </optgroup>
+        <optgroup label="Within three spaces from structure">
+          <option value="threefromblue">
+            Within three spaces from Blue structures
+          </option>
+          <option value="threefromgreen">
+            Within three spaces from Green structures
+          </option>
+          <option value="threefromwhite">
+            Within three spaces from White structures
+          </option>
+          <option value="threefromblack">
+            Within three spaces from Black structures
+          </option>
+        </optgroup>
+      </select>
+      <label for="initialInverse">Inverse</label>
+      <input type="checkbox" name="initialInverse" id="initialInverse" />
+      <br /><br />
+      <button onclick="findSolutions()">Find solutions</button>
     </div>
-    <div style="position:absolute;top:0;right:20px;max-width:350px;" id="possibilities"></div>
-    <div style="position:relative;max-width:350px;" id="possibleClueCombinations"></div>
-    <br>
-    <br>
+    <div class="possibilities-drawer slide">
+      <div id="possibilities"></div>
+    </div>
+    <div id="possibleClueCombinations" class="show"></div>
+    <br />
+    <br />
     <script defer src="tiles.js"></script>
     <script defer src="graphics.js"></script>
     <script defer src="dom.js"></script>
     <script defer src="clues.js"></script>
     <script defer src="script.js"></script>
-</body>
+  </body>
 </html>
