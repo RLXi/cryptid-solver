@@ -13,8 +13,9 @@ canvas {
 
 .possibilities-drawer {
   position: fixed;
+  height: 90vh;
   top: 0;
-  right: 20px;
+  right: 0;
   transform: translateX(200%);
   max-width: 350px;
   z-index: 1;
