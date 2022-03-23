@@ -1,3 +1,43 @@
+const advancedCheckbox = document.querySelector('#advanced');
+const blackShackInput = document.querySelector('#blackshack');
+const blackStoneInput = document.querySelector('#blackstone');
+const useInitialCheckbox = document.querySelector('#useInitial');
+const initialSelect = document.querySelector('#initial');
+const initialInverseCheckbox = document.querySelector('#initialInverse');
+
+advancedCheckbox.addEventListener('change', (e) => {
+    blackShackInput.toggleAttribute('disabled');
+    blackStoneInput.toggleAttribute('disabled');
+    
+    if (blackShackInput.disabled){
+        blackShackInput.setAttribute('placeholder', 'only used in advanced')
+        blackStoneInput.setAttribute('placeholder', 'only used in advanced')
+    } else {
+        blackShackInput.setAttribute('placeholder', '')
+        blackStoneInput.setAttribute('placeholder', '')
+    }
+
+    if (useInitialCheckbox.checked && advancedCheckbox.checked) {
+      initialInverseCheckbox.removeAttribute('disabled');
+    } else {
+      initialInverseCheckbox.setAttribute('disabled', true);
+    }
+})
+
+useInitialCheckbox.addEventListener('change', () => {
+  if (initialSelect.disabled) {
+    initialSelect.removeAttribute('disabled')
+  } else {
+    initialSelect.toggleAttribute('disabled')
+  }
+
+  if (advancedCheckbox.checked && useInitialCheckbox.checked) {
+    initialInverseCheckbox.removeAttribute('disabled');
+  } else {
+    initialInverseCheckbox.setAttribute('disabled', true);
+  }
+});
+
 const togglePossibilities = document.querySelector("[toggle-possibilities]");
 const toggleClueCombinations = document.querySelector(
   "[toggle-clue-combinations]"

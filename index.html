@@ -35,6 +35,20 @@
       <!--        <button onclick="findHex()">Find hex</button>-->
       <!--        <br>-->
       <br />
+      
+      <label for="playerAmount">Player amount</label>
+      <input
+        type="number"
+        name="playerAmount"
+        id="playerAmount"
+        min="3"
+        max="5"
+        value="4"
+      />
+      <br />
+      <label for="advanced">Advanced game</label>
+      <input type="checkbox" name="advanced" id="advanced" value="yes" />
+      <br /><br />
       <span>Structures</span>
       <br />
       <label for="blueshack">Blue Shack</label>
@@ -87,41 +101,31 @@
         type="text"
         id="blackshack"
         name="blackshack"
-        placeholder="leave empty if simple"
+        placeholder="only used in advanced"
+        disabled
       />
       <label for="blackstone">Black Stone</label>
       <input
         type="text"
         id="blackstone"
         name="blackstone"
-        placeholder="leave empty if simple"
+        placeholder="only used in advanced"
+        disabled
       />
       <br />
       <button onclick="applyStructures()">Apply structures</button>
-      <br /><br />
-      <label for="playerAmount">Player amount</label>
-      <input
-        type="number"
-        name="playerAmount"
-        id="playerAmount"
-        min="3"
-        max="5"
-        value="4"
-      />
-      <br />
-      <label for="advanced">Advanced game</label>
-      <input type="checkbox" name="advanced" id="advanced" value="yes" />
+      
       <br /><br />
       <label
         for="useInitial"
         title="Helps with searching times, especially with 4-5 players and advanced game"
         >Use initial clue</label
       >
-      <input type="checkbox" value="0" id="useInitial" name="useInitial" />
+      <input type="checkbox" id="useInitial" name="useInitial" />
       <br />
       <label for="initial" title="Your clue">Initial clue</label>
       <br />
-      <select name="initialClue" id="initial">
+      <select name="initialClue" id="initial" disabled>
         <optgroup label="In terrain">
           <option value="inforestdesert">In Forest or Desert</option>
           <option value="inforestswamp">In Forest or Swamp</option>
@@ -174,7 +178,7 @@
         </optgroup>
       </select>
       <label for="initialInverse">Inverse</label>
-      <input type="checkbox" name="initialInverse" id="initialInverse" />
+      <input type="checkbox" name="initialInverse" id="initialInverse" disabled/>
       <br /><br />
       <button onclick="findSolutions()">Find solutions</button>
     </div>
